@@ -47,5 +47,9 @@
                 reserved.
             </footer>
         </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+
+        
     </body>
 </x-laravel-ui-adminlte::adminlte-layout>

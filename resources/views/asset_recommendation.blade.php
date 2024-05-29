@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
 <div class="container">
     <div class="card mt-3 mb-3">
         <div class="card-body">
@@ -16,49 +15,10 @@
                 </div>
                 <button class="btn btn-primary" type="submit">Import Data</button>
             </form>
-
-            @if ($errors->any())
-                <div class="alert alert-danger mt-3">
-                        @foreach ($errors->all() as $error)
-                            {{ $error }}
-                        @endforeach
-                </div>
-            @endif
-
-            @if (session('success'))
-                <div id="successMessage" class="alert alert-success mt-3">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div id="errorMessage" class="alert alert-danger mt-3">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            @if (session('file_warning'))
-                <div id="fileWarningMessage" class="alert alert-warning mt-3">
-                    {{ session('file_warning') }}
-                </div>
-            @endif
-
-            <div id="dateErrorMessageContainer" class="alert alert-danger mt-3" style="display: none;">
-                <ul id="dateErrorMessagesList"></ul>
-            </div>
-
+            
             <!-- Table for displaying assets -->
             <table class="table table-bordered mt-3">
-                <tr>
-                    <th colspan="12">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            Assets
-                            <div>
-                                <a class="btn btn-danger" href="{{ route('export') }}" style="font-size: 13px;">Export Data</a>
-                            </div>
-                        </div>
-                    </th>
-                </tr>
+                <!-- Table headers -->
                 <tr>
                     <th>ID</th>
                     <th>Functional Location</th>
@@ -72,40 +32,42 @@
                     <th>Completed Status</th>
                     <th>Actions</th>
                 </tr>
+                
+                <!-- Asset rows -->
                 @foreach($assets as $asset)
                 <tr>
+                    <!-- Asset data columns -->
                     <td>{{ $loop->iteration }}</td>
                     <td>
+                        <!-- Trigger modal on click -->
                         <a href="#" class="popup-link" data-toggle="modal" data-target="#infoModal" data-info="{{ $asset->Functional_Location }}">{{ $asset->Functional_Location }}</a>
                     </td>
                     <td>{{ $asset->Switchgear_Brand }}</td>
                     <td>{{ $asset->Substation_Name }}</td>
                     <td>
-                        @if ($asset->TEV > 0 && $asset->TEV < 5)
-                        <?php $Health_Status = 'Minor'; ?>
-                        @elseif ($asset->TEV >= 5 && $asset->TEV < 10)
-                        <?php $Health_Status = 'Major'; ?>
-                        @elseif ($asset->TEV >= 10)
-                        <?php $Health_Status = 'Critical'; ?>
-                        @else
-                        <?php $Health_Status = 'Unknown'; ?>
-                        @endif
-
-                        <?php $asset->health_status = $Health_Status;
-                        $asset->save(); ?>
+                        <!-- Health Status badge -->
+                        @php
+                            $Health_Status = 'Unknown';
+                            if ($asset->TEV > 0 && $asset->TEV < 5)
+                                $Health_Status = 'Minor';
+                            elseif ($asset->TEV >= 5 && $asset->TEV < 10)
+                                $Health_Status = 'Major';
+                            elseif ($asset->TEV >= 10)
+                                $Health_Status = 'Critical';
+                        @endphp
 
                         @if ($Health_Status == 'Minor')
-                        <span class="badge badge-success">Minor</span>
+                            <span class="badge badge-success">Minor</span>
                         @elseif ($Health_Status == 'Major')
-                        <span class="badge badge-warning">Major</span>
+                            <span class="badge badge-warning">Major</span>
                         @elseif ($Health_Status == 'Critical')
-                        <span class="badge badge-danger">Critical</span>
+                            <span class="badge badge-danger">Critical</span>
                         @endif
                     </td>
                     <td>{{ $asset->TEV }}</td>
                     <td>{{ $asset->Hotspot }}</td>
-                                    
                     <td>
+                        <!-- Acknowledgment Status -->
                         @if ($asset->acknowledgment_status)
                             {{ \Carbon\Carbon::parse($asset->acknowledgment_status)->format('Y-m-d H:i:s') }}
                         @else
@@ -118,6 +80,7 @@
                     <td>{{ $asset->ongoing_status }}</td>
                     <td>{{ $asset->completed_status }}</td>
                     <td>
+                        <!-- Update button -->
                         @if ($asset->completed_status)
                             &#10004;
                         @elseif ($asset->acknowledgment_status)
@@ -125,8 +88,8 @@
                         @endif
                     </td>
                 </tr>
-
-                <!-- Modal for updating asset -->
+                
+                <!-- Update Modal -->
                 <div class="modal fade" id="updateModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel{{$asset->id}}" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -139,21 +102,7 @@
                             <form action="{{ route('assets.updateStatus', $asset->id) }}" method="POST">
                                 @csrf
                                 <div class="modal-body">
-                                    <div class="form-group">
-                                        <label for="rectifierName{{$asset->id}}">Rectifier's Name</label>
-                                        <input type="text" class="form-control" id="rectifierName{{$asset->id}}" name="rectifierName" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="progressDate{{$asset->id}}">Progress Date</label>
-                                        <input type="date" class="form-control" id="progressDate{{$asset->id}}" name="progressDate" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="rectifyStatus{{$asset->id}}">Rectify Status</label>
-                                        <select class="form-control" id="rectifyStatus{{$asset->id}}" name="rectifyStatus" required>
-                                            <option value="ongoing">Ongoing</option>
-                                            <option value="completed">Completed</option>
-                                        </select>
-                                    </div>
+                                    <!-- Update form fields -->
                                 </div>                                
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -165,25 +114,46 @@
                 </div>
                 @endforeach
             </table>
-            <div class="p-4">
-                <button class="flex items-center text-gray-600">
-                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-2">Back</span>
+        </div>
+    </div>
+</div>
+
+<!-- Single Modal for displaying Functional Location Information -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Functional Location Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="d-flex justify-content-center">
-                {{ $assets->links() }}
+            <div class="modal-body">
+                <form id="infoForm">
+                    <div class="form-group">
+                        <label for="functionalLocation">Functional Location</label>
+                        <input type="text" class="form-control" id="functionalLocation" readonly>
+                    </div>
+                    <!-- Add more form fields as needed -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Include jQuery from a CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+
+
+
 <script>
     $(document).ready(function() {
         $('.popup-link').on('click', function() {
             var functionalLocation = $(this).data('info');
+            console.log("Functional Location:", functionalLocation); // Debug log
             $('#functionalLocation').val(functionalLocation);
         });
     });
@@ -250,12 +220,4 @@
         showErrorMessage('{{ session('file_warning') }}');
     @endif
 </script>
-
 @endsection
-
-
-
-
-
-
-
