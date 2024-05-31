@@ -20,8 +20,6 @@ class ApprovalController extends Controller
     public function approve(Request $request, $id)
 {
     $approval = Approval::findOrFail($id);
-
-    // Move the asset to the Assets table
     Assets::create([
         'Functional_Location' => $approval->Functional_Location,
         'Switchgear_Brand' => $approval->Switchgear_Brand,

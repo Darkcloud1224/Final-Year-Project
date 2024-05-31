@@ -13,6 +13,34 @@
             </ul>
         </nav>
     </div>
-
-
 </aside>
+
+<style>
+    .main-sidebar {
+        background-color: #000 !important; /* Change sidebar background to black */
+    }
+
+    .main-sidebar .nav-sidebar > .nav-item > .nav-link {
+        color: #fff !important; /* Change link text color to white */
+    }
+
+    .main-sidebar .nav-sidebar > .nav-item > .nav-link:hover {
+        background-color: #333 !important; /* Change link hover background color to dark gray */
+    }
+
+    .main-sidebar .nav-sidebar > .nav-item > .nav-link.active {
+        background-color: #555 !important; /* Change active link background color */
+    }
+
+    .main-sidebar .brand-link {
+        border-bottom: 1px solid #4b4b4b; /* Optional: adds a bottom border to brand link */
+    }
+
+    .main-sidebar .brand-link .brand-text {
+        color: #fff !important; /* Ensure the brand text is white */
+    }
+
+    .main-sidebar .brand-link img {
+        opacity: 0.8; /* Optional: adjust the opacity of the logo image */
+    }
+</style>

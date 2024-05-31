@@ -27,9 +27,21 @@ class AssetRecommendationController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        $assets = Assets::paginate(10); // Adjust the number to how many items you want per page
+        $query = Assets::query();
+
+        if ($request->has('search')) {
+            $query->where('Functional_Location', 'like', '%' . $request->input('search') . '%');
+        }
+        if ($request->has('brand')) {
+            $query->where('Switchgear_Brand', 'like', '%' . $request->input('brand') . '%');
+        }
+
+        // Sort the assets by ID in descending order
+        $query->orderBy('id', 'desc');
+
+        $assets = $query->get(); 
         return view('asset_recommendation', compact('assets'));
     }
 
@@ -61,9 +73,8 @@ class AssetRecommendationController extends Controller
         try {
             $file = $request->file('file');
             $existingLogs = ReportLog::where('file_name', $file->getClientOriginalName())->exists();
-
-                Excel::import(new AssetsImport, $file, null, \Maatwebsite\Excel\Excel::CSV, [
-                    'startRow' => 2
+                Excel::import(new AssetsImport, $file, null, \Maatwebsite\Excel\Excel::XLSX, [
+                    'startRow' => 3
                 ]);
                 
                 ReportLog::create([

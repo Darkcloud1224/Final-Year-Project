@@ -1,124 +1,183 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .table th, .table td {
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+    }
+
+    .modal-title, .modal-body label {
+        font-size: 1rem;
+    }
+
+    .custom-file-label, .alert {
+        font-size: 0.9rem;
+    }
+</style>
+
 <div class="container">
     <div class="card mt-3 mb-3">
         <div class="card-body">
+            <!-- Success and Error messages -->
+            <div id="successMessage" class="alert alert-success" style="display:none;"></div>
+            <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
+            <div id="dateErrorMessageContainer" class="alert alert-danger" style="display:none;">
+                <ul id="dateErrorMessagesList"></ul>
+            </div>
+
             <!-- Form for importing data -->
             <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group mb-3">
                     <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="fileInput" name="file" accept=".csv">
+                        <input type="file" class="custom-file-input" id="fileInput" name="file" accept=".xlsx">
                         <label class="custom-file-label" for="fileInput">Choose file</label>
                     </div>
-                </div>
-                <button class="btn btn-primary" type="submit">Import Data</button>
-            </form>
-            
-            <!-- Table for displaying assets -->
-            <table class="table table-bordered mt-3">
-                <!-- Table headers -->
-                <tr>
-                    <th>ID</th>
-                    <th>Functional Location</th>
-                    <th>Switchgear Brand</th>
-                    <th>Substation Name</th>
-                    <th>Health Status</th>
-                    <th>TEV</th>
-                    <th>Hotspot</th>
-                    <th>Acknowledgment Status</th>
-                    <th>Ongoing Status</th>
-                    <th>Completed Status</th>
-                    <th>Actions</th>
-                </tr>
-                
-                <!-- Asset rows -->
-                @foreach($assets as $asset)
-                <tr>
-                    <!-- Asset data columns -->
-                    <td>{{ $loop->iteration }}</td>
-                    <td>
-                        <!-- Trigger modal on click -->
-                        <a href="#" class="popup-link" data-toggle="modal" data-target="#infoModal" data-info="{{ $asset->Functional_Location }}">{{ $asset->Functional_Location }}</a>
-                    </td>
-                    <td>{{ $asset->Switchgear_Brand }}</td>
-                    <td>{{ $asset->Substation_Name }}</td>
-                    <td>
-                        <!-- Health Status badge -->
-                        @php
-                            $Health_Status = 'Unknown';
-                            if ($asset->TEV > 0 && $asset->TEV < 5)
-                                $Health_Status = 'Minor';
-                            elseif ($asset->TEV >= 5 && $asset->TEV < 10)
-                                $Health_Status = 'Major';
-                            elseif ($asset->TEV >= 10)
-                                $Health_Status = 'Critical';
-                        @endphp
-
-                        @if ($Health_Status == 'Minor')
-                            <span class="badge badge-success">Minor</span>
-                        @elseif ($Health_Status == 'Major')
-                            <span class="badge badge-warning">Major</span>
-                        @elseif ($Health_Status == 'Critical')
-                            <span class="badge badge-danger">Critical</span>
-                        @endif
-                    </td>
-                    <td>{{ $asset->TEV }}</td>
-                    <td>{{ $asset->Hotspot }}</td>
-                    <td>
-                        <!-- Acknowledgment Status -->
-                        @if ($asset->acknowledgment_status)
-                            {{ \Carbon\Carbon::parse($asset->acknowledgment_status)->format('Y-m-d H:i:s') }}
-                        @else
-                            <form action="{{ route('assets.acknowledge', $asset->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-primary">Acknowledge</button>
-                            </form>
-                        @endif
-                    </td>
-                    <td>{{ $asset->ongoing_status }}</td>
-                    <td>{{ $asset->completed_status }}</td>
-                    <td>
-                        <!-- Update button -->
-                        @if ($asset->completed_status)
-                            &#10004;
-                        @elseif ($asset->acknowledgment_status)
-                            <button class="btn btn-primary update-button" data-toggle="modal" data-target="#updateModal{{$asset->id}}">Update</button>
-                        @endif
-                    </td>
-                </tr>
-                
-                <!-- Update Modal -->
-                <div class="modal fade" id="updateModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel{{$asset->id}}" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="updateModalLabel{{$asset->id}}">Update Asset</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <form action="{{ route('assets.updateStatus', $asset->id) }}" method="POST">
-                                @csrf
-                                <div class="modal-body">
-                                    <!-- Update form fields -->
-                                </div>                                
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </div>
-                            </form>
-                        </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Import Data</button>
                     </div>
                 </div>
-                @endforeach
-            </table>
+            </form>
+
+            <!-- Search and filter forms -->
+            <form method="GET" action="{{ route('asset_recommendation') }}">
+                <div class="form-row align-items-center">
+                    <div class="col-sm-4 my-1">
+                        <input type="text" class="form-control" name="search" placeholder="Search Functional Location" value="{{ request()->get('search') }}">
+                    </div>
+                    <div class="col-sm-4 my-1">
+                        <input type="text" class="form-control" name="brand" placeholder="Filter by Brand" value="{{ request()->get('brand') }}">
+                    </div>
+                    <div class="col-auto my-1">
+                        <button type="submit" class="btn btn-primary">Search/Filter</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Table for displaying assets -->
+            <div class="table-responsive">
+                <table class="table table-bordered mt-3">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Functional Location</th>
+                            <th>Switchgear Brand</th>
+                            <th>Substation Name</th>
+                            <th>Health Status</th>
+                            <th>TEV</th>
+                            <th>Hotspot</th>
+                            <th>Acknowledgment Status</th>
+                            <th>Ongoing Status</th>
+                            <th>Completed Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($assets as $asset)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>
+                                <a href="#" class="popup-link" data-toggle="modal" data-target="#infoModal" data-info="{{ $asset->Functional_Location }}">{{ $asset->Functional_Location }}</a>
+                            </td>
+                            <td>{{ $asset->Switchgear_Brand }}</td>
+                            <td>{{ $asset->Substation_Name }}</td>
+                            <td>
+                                @php
+                                    $Health_Status = 'Unknown';
+                                    if ($asset->TEV > 0 && $asset->TEV < 5)
+                                        $Health_Status = 'Minor';
+                                    elseif ($asset->TEV >= 5 && $asset->TEV < 10)
+                                        $Health_Status = 'Major';
+                                    elseif ($asset->TEV >= 10)
+                                        $Health_Status = 'Critical';
+                                @endphp
+
+                                @if ($Health_Status == 'Minor')
+                                    <span class="badge badge-success">Minor</span>
+                                @elseif ($Health_Status == 'Major')
+                                    <span class="badge badge-warning">Major</span>
+                                @elseif ($Health_Status == 'Critical')
+                                    <span class="badge badge-danger">Critical</span>
+                                @endif
+                            </td>
+                            <td>{{ $asset->TEV }}</td>
+                            <td>{{ $asset->Hotspot }}</td>
+                            <td>
+                                @if ($asset->acknowledgment_status)
+                                    {{ \Carbon\Carbon::parse($asset->acknowledgment_status)->format('Y-m-d H:i:s') }}
+                                @else
+                                    <form action="{{ route('assets.acknowledge', $asset->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-primary btn-sm">Acknowledge</button>
+                                    </form>
+                                @endif
+                            </td>
+                            <td>{{ $asset->ongoing_status }}</td>
+                            <td>{{ $asset->completed_status }}</td>
+                            <td>
+                                @if ($asset->completed_status)
+                                    &#10004;
+                                @elseif ($asset->acknowledgment_status)
+                                    <button class="btn btn-primary btn-sm update-button" data-toggle="modal" data-target="#updateModal{{$asset->id}}">Update</button>
+                                @endif
+                            </td>
+                        </tr>
+
+                        <!-- Update Modal -->
+                        <div class="modal fade" id="updateModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel{{$asset->id}}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="updateModalLabel{{$asset->id}}">Update Asset</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form action="{{ route('assets.updateStatus', $asset->id) }}" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="rectifierName{{$asset->id}}">Rectifier's Name</label>
+                                                <input type="text" class="form-control" id="rectifierName{{$asset->id}}" name="rectifierName" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="progressDate{{$asset->id}}">Progress Date</label>
+                                                <input type="date" class="form-control" id="progressDate{{$asset->id}}" name="progressDate" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="rectifyStatus{{$asset->id}}">Rectify Status</label>
+                                                <select class="form-control" id="rectifyStatus{{$asset->id}}" name="rectifyStatus" required>
+                                                    <option value="ongoing">Ongoing</option>
+                                                    <option value="completed">Completed</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Single Modal for displaying Functional Location Information -->
 <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -134,7 +193,6 @@
                         <label for="functionalLocation">Functional Location</label>
                         <input type="text" class="form-control" id="functionalLocation" readonly>
                     </div>
-                    <!-- Add more form fields as needed -->
                 </form>
             </div>
             <div class="modal-footer">
@@ -144,16 +202,13 @@
     </div>
 </div>
 
-<!-- Include jQuery from a CDN -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-
-
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
     $(document).ready(function() {
         $('.popup-link').on('click', function() {
             var functionalLocation = $(this).data('info');
-            console.log("Functional Location:", functionalLocation); // Debug log
             $('#functionalLocation').val(functionalLocation);
         });
     });

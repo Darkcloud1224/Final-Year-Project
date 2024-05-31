@@ -12,7 +12,7 @@ class AssetsImport implements ToCollection
 {
     public function startRow(): int
     {
-        return 2; // Start reading from the second row
+        return 3; // Start reading from the second row
     }
 
     /**
@@ -27,8 +27,12 @@ class AssetsImport implements ToCollection
 
 
         $count = 0;
-        foreach ($rows as $row) {
+        foreach ($rows as $index => $row) {            
             if ($count > 1) {
+                if (is_null($row[4]) || is_null($row[5])) {
+                    Session::flash('error', 'TEV or Hotspot column cannot be null in row. Please check back your uploaded excel file at column no ' . ($index + 1));
+                    continue; 
+                }
                 if (!$existingFunctionalLocations->contains($row[11])) {
                     $asset_Var = new Approval([ 
                         'Functional_Location' => $row[11],
@@ -48,7 +52,11 @@ class AssetsImport implements ToCollection
                     ]);
                     Session::flash('success', 'Data imported successfully and new asset created.');
                 }
-                $saved = $asset_Var->save();
+                try {
+                    $saved = $asset_Var->save();
+                } catch (\Exception $e) {
+                    dd($e->getMessage()); // Display the SQL error message
+                }
             }
             else {
                 $count = $count + 1;
