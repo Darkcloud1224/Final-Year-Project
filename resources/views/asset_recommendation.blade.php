@@ -23,19 +23,26 @@
     .custom-file-label, .alert {
         font-size: 0.9rem;
     }
+
+    .sortable:after {
+        content: '\25b2'; /* Up arrow */
+        float: right;
+        margin-left: 5px;
+    }
+    .sortable.desc:after {
+        content: '\25bc'; /* Down arrow */
+    }
 </style>
 
 <div class="container">
     <div class="card mt-3 mb-3">
         <div class="card-body">
-            <!-- Success and Error messages -->
             <div id="successMessage" class="alert alert-success" style="display:none;"></div>
             <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
             <div id="dateErrorMessageContainer" class="alert alert-danger" style="display:none;">
                 <ul id="dateErrorMessagesList"></ul>
             </div>
 
-            <!-- Form for importing data -->
             <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group mb-3">
@@ -49,22 +56,17 @@
                 </div>
             </form>
 
-            <!-- Search and filter forms -->
             <form method="GET" action="{{ route('asset_recommendation') }}">
                 <div class="form-row align-items-center">
                     <div class="col-sm-4 my-1">
                         <input type="text" class="form-control" name="search" placeholder="Search Functional Location" value="{{ request()->get('search') }}">
                     </div>
-                    <div class="col-sm-4 my-1">
-                        <input type="text" class="form-control" name="brand" placeholder="Filter by Brand" value="{{ request()->get('brand') }}">
-                    </div>
                     <div class="col-auto my-1">
-                        <button type="submit" class="btn btn-primary">Search/Filter</button>
+                        <button type="submit" class="btn btn-primary">Search</button>
                     </div>
                 </div>
             </form>
 
-            <!-- Table for displaying assets -->
             <div class="table-responsive">
                 <table class="table table-bordered mt-3">
                     <thead class="thead-dark">
@@ -73,16 +75,16 @@
                             <th>Functional Location</th>
                             <th>Switchgear Brand</th>
                             <th>Substation Name</th>
-                            <th>Health Status</th>
+                            <th class="sortable" data-column="health_status" data-order="asc">Health Status</th>
                             <th>TEV</th>
                             <th>Hotspot</th>
                             <th>Acknowledgment Status</th>
                             <th>Ongoing Status</th>
                             <th>Completed Status</th>
-                            <th>Actions</th>
+                            <th>Update Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="assetTableBody">
                         @foreach($assets as $asset)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
@@ -133,7 +135,6 @@
                             </td>
                         </tr>
 
-                        <!-- Update Modal -->
                         <div class="modal fade" id="updateModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel{{$asset->id}}" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -211,6 +212,33 @@
             var functionalLocation = $(this).data('info');
             $('#functionalLocation').val(functionalLocation);
         });
+
+        $('.sortable').on('click', function() {
+            var column = $(this).data('column');
+            var order = $(this).data('order');
+            var newOrder = order === 'asc' ? 'desc' : 'asc';
+            $(this).data('order', newOrder);
+            sortTable(column, newOrder);
+            $(this).toggleClass('desc', newOrder === 'desc');
+        });
+
+        function sortTable(column, order) {
+            var rows = $('#assetTableBody tr').get();
+            rows.sort(function(a, b) {
+                var A = $(a).children('td').eq(4).text().toUpperCase(); 
+                var B = $(b).children('td').eq(4).text().toUpperCase();
+
+                if(order === 'asc') {
+                    return A > B ? 1 : (A < B ? -1 : 0);
+                } else {
+                    return A < B ? 1 : (A > B ? -1 : 0);
+                }
+            });
+
+            $.each(rows, function(index, row) {
+                $('#assetTableBody').append(row);
+            });
+        }
     });
 
     document.getElementById('fileInput').addEventListener('change', function(e) {

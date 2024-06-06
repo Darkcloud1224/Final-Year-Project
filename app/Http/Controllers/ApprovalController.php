@@ -41,21 +41,21 @@ class ApprovalController extends Controller
 }
 
     public function reject(Request $request, $id)
-{
-    $approval = Approval::findOrFail($id);
+    {
+        $approval = Approval::findOrFail($id);
 
-    $approval->delete();
+        $approval->delete();
 
-    ApprovalLog::create([
-        'Recitified_Action' => 'Rejected', 
-        'User_Name' => auth()->user()->name,
-        'Asset_Name' => $approval->Functional_Location,
-    ]);
+        ApprovalLog::create([
+            'Recitified_Action' => 'Rejected', 
+            'User_Name' => auth()->user()->name,
+            'Asset_Name' => $approval->Functional_Location,
+        ]);
 
-    return redirect()->route('approval.index')->with('success', 'Asset rejected successfully.');
-}
+        return redirect()->route('approval.index')->with('success', 'Asset rejected successfully.');
+    }
 
-}
+    }
 
 
 

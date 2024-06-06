@@ -38,7 +38,6 @@ class AssetRecommendationController extends Controller
             $query->where('Switchgear_Brand', 'like', '%' . $request->input('brand') . '%');
         }
 
-        // Sort the assets by ID in descending order
         $query->orderBy('id', 'desc');
 
         $assets = $query->get(); 
@@ -113,28 +112,28 @@ class AssetRecommendationController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function updateStatus(Request $request, $id)
-{
-    $asset = Assets::findOrFail($id);
-    $asset->rectifier_name = $request->input('rectifierName');
-    $progressDate = $request->input('progressDate');
-    $rectifyStatus = $request->input('rectifyStatus');
+    {
+        $asset = Assets::findOrFail($id);
+        $asset->rectifier_name = $request->input('rectifierName');
+        $progressDate = $request->input('progressDate');
+        $rectifyStatus = $request->input('rectifyStatus');
 
-    if ($rectifyStatus == 'ongoing') {
-        $asset->ongoing_status = $progressDate;
-        $asset->completed_status = null;
-    } elseif ($rectifyStatus == 'completed') {
-        if ($asset->ongoing_status && $progressDate > $asset->ongoing_status) {
-            $asset->completed_status = $progressDate;
-        } else {
-            return redirect()->back()->withErrors([
-                'error' => 'Completed status date must be after the ongoing status date'
-            ])->withInput();
+        if ($rectifyStatus == 'ongoing') {
+            $asset->ongoing_status = $progressDate;
+            $asset->completed_status = null;
+        } elseif ($rectifyStatus == 'completed') {
+            if ($asset->ongoing_status && $progressDate > $asset->ongoing_status) {
+                $asset->completed_status = $progressDate;
+            } else {
+                return redirect()->back()->withErrors([
+                    'error' => 'Completed status date must be after the ongoing status date'
+                ])->withInput();
+            }
         }
+
+        $asset->save();
+
+        return redirect()->route('asset_recommendation')->with('success', 'Asset status updated successfully.');
     }
-
-    $asset->save();
-
-    return redirect()->route('asset_recommendation')->with('success', 'Asset status updated successfully.');
-}
 
 }

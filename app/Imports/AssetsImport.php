@@ -25,7 +25,6 @@ class AssetsImport implements ToCollection
 
         $existingFunctionalLocations = Assets::pluck('Functional_Location');
 
-
         $count = 0;
         foreach ($rows as $index => $row) {            
             if ($count > 1) {
@@ -55,7 +54,7 @@ class AssetsImport implements ToCollection
                 try {
                     $saved = $asset_Var->save();
                 } catch (\Exception $e) {
-                    dd($e->getMessage()); // Display the SQL error message
+                    dd($e->getMessage()); 
                 }
             }
             else {
