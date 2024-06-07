@@ -8,12 +8,12 @@
         font-family: 'Roboto', sans-serif;
     }
     .table {
-        table-layout: auto; /* Adjust column width based on content */
+        table-layout: auto; 
         width: 100%;
     }
     .table th, .table td {
         font-size: 0.9rem;
-        white-space: nowrap; /* Prevent text wrapping */
+        white-space: nowrap; 
         overflow: hidden;
         text-overflow: ellipsis;
     }
@@ -31,18 +31,18 @@
     }
 
     .sortable:after {
-        content: '\25b2'; /* Up arrow */
+        content: '\25b2'; 
         margin-left: 5px;
         position: absolute;
         right: 0;
     }
 
     .sortable.desc:after {
-        content: '\25bc'; /* Down arrow */
+        content: '\25bc'; 
     }
 
     .health-status-header {
-        white-space: nowrap; /* Prevent text wrapping */
+        white-space: nowrap; 
     }
 </style>
 
@@ -84,8 +84,9 @@
                     <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
-                            <th>Reported Date</th>
                             <th>Functional Location</th>
+                            <th>Reported Date</th>
+                            <th>Target Date</th>
                             <th>Switchgear Brand</th>
                             <th>Substation Name</th>
                             <th class="sortable health-status-header" data-column="health_status" data-order="asc">Health Status</th>
@@ -101,10 +102,11 @@
                         @foreach($assets as $asset)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $asset->Date}}</td>
                             <td>
                                 <a href="#" class="popup-link" data-toggle="modal" data-target="#infoModal" data-info="{{ $asset->Functional_Location }}" data-defect="{{ $asset->Defect }}" data-defect1="{{ $asset->Defect1 }}" data-defect2="{{ $asset->Defect2 }}">{{ $asset->Functional_Location }}</a>
                             </td>
+                            <td>{{ $asset->Date}}</td>
+                            <td>{{ $asset->Date}}</td>
                             <td>{{ $asset->Switchgear_Brand }}</td>
                             <td>{{ $asset->Substation_Name }}</td>
                             <td>

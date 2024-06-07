@@ -26,6 +26,7 @@ class ApprovalController extends Controller
         'Substation_Name' => $approval->Substation_Name,
         'TEV' => $approval->TEV,
         'Hotspot' => $approval->Hotspot,
+        'Date' => $approval->Date,
     ]);
 
     ApprovalLog::create([
