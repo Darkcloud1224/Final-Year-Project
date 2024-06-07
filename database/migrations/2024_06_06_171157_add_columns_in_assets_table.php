@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('assets', function (Blueprint $table) {
-            //
+            $table->string('Defect1')->nullable();
+            $table->string('Defect2')->nullable();
+            $table->string('Defect')->nullable();
+            $table->date('Target_Date')->nullable();
+            $table->date('Date');
+            $table->text('Action_Taken')->nullable();
         });
     }
 
@@ -22,7 +27,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('assets', function (Blueprint $table) {
-            //
+            $table->dropColumn('Defect1');
+            $table->dropColumn('Defect2');
+            $table->dropColumn('Defect');
+            $table->dropColumn('Target_Date');
+            $table->dropColumn('Date');
+            $table->dropColumn('Action_Taken');
         });
     }
 };

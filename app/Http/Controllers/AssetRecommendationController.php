@@ -7,6 +7,7 @@ use App\Exports\AssetsExport;
 use App\Imports\AssetsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Assets;
+use App\Models\User;
 use App\Models\ReportLog;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -41,7 +42,8 @@ class AssetRecommendationController extends Controller
         $query->orderBy('id', 'desc');
 
         $assets = $query->get(); 
-        return view('asset_recommendation', compact('assets'));
+        $users = User::all();
+        return view('asset_recommendation', compact('assets','users'));
     }
 
     /**

@@ -15,6 +15,10 @@ class Assets extends Model
         'Substation_Name',
         'TEV',
         'Hotspot',
+        'Date',
+        'Defect',
+        'Defect1',
+        'Defect2',
     ];
 
 }
