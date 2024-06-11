@@ -52,7 +52,7 @@
                                     <th>Substation Name</th>
                                     <th>TEV</th>
                                     <th>Hotspot</th>
-                                    <th class="actions-column">Actions</th> <!-- Apply custom class -->
+                                    <th class="actions-column">Actions</th> 
                                 </tr>
                             </thead>
                             <tbody>

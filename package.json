@@ -17,7 +17,7 @@
     },
     "dependencies": {
         "bootstrap-switch": "^3.4.0",
-        "chart.js": "^4.4.2",
+        "chart.js": "^4.4.3",
         "flash": "^1.1.0",
         "highcharts": "^11.4.1",
         "laravel": "^0.0.1",

@@ -27,6 +27,9 @@ class ApprovalController extends Controller
         'TEV' => $approval->TEV,
         'Hotspot' => $approval->Hotspot,
         'Date' => $approval->Date,
+        'Defect' => $approval->Defect,
+        'Defect1' => $approval->Defect1,
+        'Defect2' => $approval->Defect2,
     ]);
 
     ApprovalLog::create([

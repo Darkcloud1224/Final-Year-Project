@@ -106,7 +106,7 @@
                                 <a href="#" class="popup-link" data-toggle="modal" data-target="#infoModal" data-info="{{ $asset->Functional_Location }}" data-defect="{{ $asset->Defect }}" data-defect1="{{ $asset->Defect1 }}" data-defect2="{{ $asset->Defect2 }}">{{ $asset->Functional_Location }}</a>
                             </td>
                             <td>{{ $asset->Date}}</td>
-                            <td>{{ $asset->Date}}</td>
+                            <td>{{ $asset->Target_Date}}</td>
                             <td>{{ $asset->Switchgear_Brand }}</td>
                             <td>{{ $asset->Substation_Name }}</td>
                             <td>
@@ -118,6 +118,9 @@
                                         $Health_Status = 'Major';
                                     elseif ($asset->TEV >= 10)
                                         $Health_Status = 'Critical';
+
+                                    $asset->Health_Status = $Health_Status;
+                                    $asset->save();
                                 @endphp
 
                                 @if ($Health_Status == 'Minor')
@@ -127,6 +130,7 @@
                                 @elseif ($Health_Status == 'Critical')
                                     <span class="badge badge-danger">Critical</span>
                                 @endif
+
                             </td>
                             <td>{{ $asset->TEV }}</td>
                             <td>{{ $asset->Hotspot }}</td>

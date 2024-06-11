@@ -132,9 +132,7 @@ class AssetRecommendationController extends Controller
                 ])->withInput();
             }
         }
-
         $asset->save();
-
         return redirect()->route('asset_recommendation')->with('success', 'Asset status updated successfully.');
     }
 
