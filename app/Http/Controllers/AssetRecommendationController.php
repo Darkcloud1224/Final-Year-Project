@@ -136,4 +136,17 @@ class AssetRecommendationController extends Controller
         return redirect()->route('asset_recommendation')->with('success', 'Asset status updated successfully.');
     }
 
+    public function delete(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string',
+        ]);
+
+        $asset = Assets::findOrFail($id);
+        $asset->delete();
+
+
+        return redirect()->route('asset_recommendation')->with('success', 'Asset deleted successfully.');
+    }
+
 }

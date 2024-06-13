@@ -96,6 +96,7 @@
                             <th>Ongoing Status</th>
                             <th>Completed Status</th>
                             <th>Update Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="assetTableBody">
@@ -153,6 +154,14 @@
                                     <button class="btn btn-primary btn-sm update-button" data-toggle="modal" data-target="#updateModal{{$asset->id}}">Update</button>
                                 @endif
                             </td>
+                            <td>
+                                <form method="POST" action="{{ route('assets.delete', ['id' => $asset->id]) }}">
+                                    @csrf
+                                    <label for="reason">Reason for deletion:</label>
+                                    <input type="text" id="reason" name="reason">
+                                    <button type="submit">Delete Asset</button>
+                                </form>
+                            </td>
                         </tr>
 
                         <div class="modal fade" id="updateModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel{{$asset->id}}" aria-hidden="true">
@@ -203,6 +212,30 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for asset ID 1 -->
+<div class="modal fade" id="deleteModal1" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- Modal body content -->
+            <div class="modal-body">
+                <!-- Form for reason input -->
+                <form id="deleteForm1" method="POST" action="{{ route('assets.delete', ['id' => ':asset_id']) }}">
+                    @csrf
+                    <!-- Reason input field -->
+                    <div class="form-group">
+                        <label for="reason">Reason for deletion:</label>
+                        <textarea class="form-control" id="reason1" name="reason" rows="3"></textarea>
+                    </div>
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -274,14 +307,46 @@
     </div>
 </div>
 
-
-
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
     $(document).ready(function() {
+
+        $('.delete-button').on('click', function() {
+        var assetId = $(this).data('asset-id');
+        console.log("Delete button clicked!");
+        console.log("Asset ID:", assetId);
+
+        // Check if modal selector is correctly formed
+        var modalSelector = '#deleteModal' + assetId;
+        console.log("Modal selector:", modalSelector);
+
+        // Show the modal corresponding to the asset ID
+        $(modalSelector).modal('show');
+    });
+
+        $('.confirm-delete').on('click', function() {
+            var assetId = $(this).data('asset-id');
+            var reason = $('#deleteReason'+assetId).val();
+
+            $.ajax({
+                url: "{{ route('assets.delete', ['id' => ':asset_id']) }}".replace(':asset_id', assetId),
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    reason: reason
+                },
+                success: function(response) {
+                    $('#deleteModal'+assetId).modal('hide');
+                    location.reload(); // Refresh the page or update table dynamically
+                },
+                error: function(xhr) {
+                    // Handle error
+                }
+            });
+        });
+
         $('.popup-link').on('click', function() {
             var functionalLocation = $(this).data('info');
             $('#functionalLocation').val(functionalLocation);
