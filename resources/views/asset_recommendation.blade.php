@@ -155,13 +155,11 @@
                                 @endif
                             </td>
                             <td>
-                                <form method="POST" action="{{ route('assets.delete', ['id' => $asset->id]) }}">
-                                    @csrf
-                                    <label for="reason">Reason for deletion:</label>
-                                    <input type="text" id="reason" name="reason">
-                                    <button type="submit">Delete Asset</button>
-                                </form>
+                                <button class="btn btn-danger delete-button" data-toggle="modal" data-target="#deleteModal{{$asset->id}}" data-asset-id="{{ $asset->id }}">
+                                    Delete
+                                </button>
                             </td>
+                            
                         </tr>
 
                         <div class="modal fade" id="updateModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel{{$asset->id}}" aria-hidden="true">
@@ -205,6 +203,32 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="deleteModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{$asset->id}}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <form method="POST" action="{{ route('assets.delete', ['id' => $asset->id]) }}">
+                                        @csrf
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{$asset->id}}">Delete Asset</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="reason{{$asset->id}}">Reason for deletion:</label>
+                                                <textarea class="form-control" id="reason{{$asset->id}}" name="reason" rows="3" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         @endforeach
                     </tbody>
                 </table>
@@ -214,26 +238,6 @@
 </div>
 
 <!-- Modal for asset ID 1 -->
-<div class="modal fade" id="deleteModal1" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <!-- Modal body content -->
-            <div class="modal-body">
-                <!-- Form for reason input -->
-                <form id="deleteForm1" method="POST" action="{{ route('assets.delete', ['id' => ':asset_id']) }}">
-                    @csrf
-                    <!-- Reason input field -->
-                    <div class="form-group">
-                        <label for="reason">Reason for deletion:</label>
-                        <textarea class="form-control" id="reason1" name="reason" rows="3"></textarea>
-                    </div>
-                    <!-- Submit button -->
-                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
@@ -311,87 +315,90 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-
-        $('.delete-button').on('click', function() {
+$(document).ready(function() {
+    // Event handler for delete button click
+    $('.delete-button').on('click', function() {
         var assetId = $(this).data('asset-id');
         console.log("Delete button clicked!");
         console.log("Asset ID:", assetId);
-
-        // Check if modal selector is correctly formed
         var modalSelector = '#deleteModal' + assetId;
         console.log("Modal selector:", modalSelector);
-
-        // Show the modal corresponding to the asset ID
         $(modalSelector).modal('show');
     });
 
-        $('.confirm-delete').on('click', function() {
-            var assetId = $(this).data('asset-id');
-            var reason = $('#deleteReason'+assetId).val();
+    // Event delegation for confirm delete button inside modals
+    $(document).on('click', '.confirm-delete', function() {
+        var assetId = $(this).data('asset-id');
+        var reason = $('#reason' + assetId).val(); // Ensure correct ID selection here
 
-            $.ajax({
-                url: "{{ route('assets.delete', ['id' => ':asset_id']) }}".replace(':asset_id', assetId),
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    reason: reason
-                },
-                success: function(response) {
-                    $('#deleteModal'+assetId).modal('hide');
-                    location.reload(); // Refresh the page or update table dynamically
-                },
-                error: function(xhr) {
-                    // Handle error
-                }
-            });
+        $.ajax({
+            url: "{{ route('assets.delete', ['id' => ':asset_id']) }}".replace(':asset_id', assetId),
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                reason: reason
+            },
+            success: function(response) {
+                $('#deleteModal' + assetId).modal('hide');
+                location.reload(); // Refresh the page or update table dynamically
+            },
+            error: function(xhr) {
+                // Handle error
+                console.error('Error deleting asset:', xhr);
+                // Optionally show an error message to the user
+            }
         });
-
-        $('.popup-link').on('click', function() {
-            var functionalLocation = $(this).data('info');
-            $('#functionalLocation').val(functionalLocation);
-            var defect = $(this).data('defect');
-            $('#defect').val(defect);
-            var defect1 = $(this).data('defect1');
-            $('#defect1').val(defect1);
-            var defect2 = $(this).data('defect2');
-            $('#defect2').val(defect2);
-        });
-
-        $('.sortable').on('click', function() {
-            var column = $(this).data('column');
-            var order = $(this).data('order');
-            var newOrder = order === 'asc' ? 'desc' : 'asc';
-            $(this).data('order', newOrder);
-            sortTable(column, newOrder);
-            $(this).toggleClass('desc', newOrder === 'desc');
-        });
-
-        function sortTable(column, order) {
-            var rows = $('#assetTableBody tr').get();
-            rows.sort(function(a, b) {
-                var A = $(a).children('td').eq(4).text().toUpperCase(); 
-                var B = $(b).children('td').eq(4).text().toUpperCase();
-
-                if(order === 'asc') {
-                    return A > B ? 1 : (A < B ? -1 : 0);
-                } else {
-                    return A < B ? 1 : (A > B ? -1 : 0);
-                }
-            });
-
-            $.each(rows, function(index, row) {
-                $('#assetTableBody').append(row);
-            });
-        }
     });
 
+    // Event handler for popup link click
+    $('.popup-link').on('click', function() {
+        var functionalLocation = $(this).data('info');
+        $('#functionalLocation').val(functionalLocation);
+        var defect = $(this).data('defect');
+        $('#defect').val(defect);
+        var defect1 = $(this).data('defect1');
+        $('#defect1').val(defect1);
+        var defect2 = $(this).data('defect2');
+        $('#defect2').val(defect2);
+    });
+
+    // Event handler for sortable columns in the table
+    $('.sortable').on('click', function() {
+        var column = $(this).data('column');
+        var order = $(this).data('order');
+        var newOrder = order === 'asc' ? 'desc' : 'asc';
+        $(this).data('order', newOrder);
+        sortTable(column, newOrder);
+        $(this).toggleClass('desc', newOrder === 'desc');
+    });
+
+    // Function to sort the table rows
+    function sortTable(column, order) {
+        var rows = $('#assetTableBody tr').get();
+        rows.sort(function(a, b) {
+            var A = $(a).children('td').eq(4).text().toUpperCase();
+            var B = $(b).children('td').eq(4).text().toUpperCase();
+
+            if (order === 'asc') {
+                return A > B ? 1 : (A < B ? -1 : 0);
+            } else {
+                return A < B ? 1 : (A > B ? -1 : 0);
+            }
+        });
+
+        $.each(rows, function(index, row) {
+            $('#assetTableBody').append(row);
+        });
+    }
+
+    // Event listener for file input change
     document.getElementById('fileInput').addEventListener('change', function(e) {
         var fileName = e.target.files[0].name;
         var label = document.querySelector('.custom-file-label');
         label.textContent = fileName;
     });
 
+    // Function to display success message
     function showSuccessMessage(message) {
         var successMessage = document.getElementById('successMessage');
         successMessage.innerText = message;
@@ -401,6 +408,7 @@
         }, 5000);
     }
 
+    // Function to display error message
     function showErrorMessage(message) {
         var errorMessage = document.getElementById('errorMessage');
         errorMessage.innerText = message;
@@ -410,6 +418,7 @@
         }, 5000);
     }
 
+    // Function to display date error messages
     function showDateErrorMessage(messages) {
         var errorMessageContainer = document.getElementById('dateErrorMessageContainer');
         var errorMessagesList = document.getElementById('dateErrorMessagesList');
@@ -429,23 +438,29 @@
         }, 5000);
     }
 
+    // Handling Laravel validation errors
     @if ($errors->any())
-        document.addEventListener('DOMContentLoaded', function() {
-            var errors = @json($errors->all());
-            showDateErrorMessage(errors);
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        var errors = @json($errors->all());
+        showDateErrorMessage(errors);
+    });
     @endif
 
+    // Handling success messages
     @if(session('success'))
-        showSuccessMessage('{{ session('success') }}');
+    showSuccessMessage('{{ session('success') }}');
     @endif
 
+    // Handling error messages
     @if(session('error'))
-        showErrorMessage('{{ session('error') }}');
+    showErrorMessage('{{ session('error') }}');
     @endif
 
+    // Handling file warning messages
     @if(session('file_warning'))
-        showErrorMessage('{{ session('file_warning') }}');
+    showErrorMessage('{{ session('file_warning') }}');
     @endif
+});
 </script>
+
 @endsection

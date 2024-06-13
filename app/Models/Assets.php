@@ -10,6 +10,7 @@ class Assets extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'Functional_Location',
         'Switchgear_Brand',
         'Substation_Name',
