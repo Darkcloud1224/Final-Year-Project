@@ -26,4 +26,8 @@
         <i class="nav-icon fa fa-check-square"></i>
         <p>Approval Log</p>
     </a>
+    <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users*') ? 'active' : '' }}">
+        <i class="nav-icon fa fa-check-square"></i>
+        <p>Manage Users</p>
+    </a>
 </li>

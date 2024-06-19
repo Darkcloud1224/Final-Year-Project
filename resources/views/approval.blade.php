@@ -22,9 +22,8 @@
         font-size: 0.9rem;
     }
 
-    /* Custom CSS for the Actions column */
     .actions-column {
-        width: 180px; /* Adjust the width as needed */
+        width: 180px; 
     }
 </style>
 
@@ -68,12 +67,38 @@
                                                 @csrf
                                                 <button type="submit" class="btn btn-success">Approve</button>
                                             </form>
-                                            <form action="{{ route('approval.reject', $approval->id) }}" method="POST">
+                                            <form action="{{ route('approval.reject', $approval->id) }}" method="POST" class="reject-form">
                                                 @csrf
-                                                <button type="submit" class="btn btn-danger">Reject</button>
+                                                <button type="button" class="btn btn-danger btn-reject">Reject</button>
                                             </form>
                                         </td>
                                     </tr>
+                                    <!-- Rejection Reason Modal -->
+                                    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <form id="rejectForm" method="POST">
+                                                    @csrf
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="rejectModalLabel">Rejection Reason</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="rejectionReason">Reason for rejection:</label>
+                                                            <textarea class="form-control" id="rejectionReason" name="reason" rows="3" required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-danger">Reject</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
@@ -83,4 +108,38 @@
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        var rejectFormAction;
+
+        $('.btn-reject').on('click', function(event) {
+            event.preventDefault();
+            var button = $(this);
+            rejectFormAction = button.closest('form').attr('action');
+            $('#rejectModal').modal('show');
+        });
+
+        $('#rejectForm').on('submit', function(event) {
+            event.preventDefault();
+            var reason = $('#rejectionReason').val();
+            if (reason.trim() === '') {
+                alert('Please provide a reason for rejection.');
+                return;
+            }
+            var form = $(this);
+            form.attr('action', rejectFormAction);
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'reason',
+                value: reason
+            }).appendTo(form);
+            form.off('submit').submit();
+        });
+    });
+</script>
+
 @endsection

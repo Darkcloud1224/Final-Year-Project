@@ -7,6 +7,8 @@ use App\Http\Controllers\ReportLogController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\ApprovalLogController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -39,4 +41,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/approval/{id}/reject', [ApprovalController::class, 'reject'])->name('approval.reject');
     Route::resource('approval_log', ApprovalLogController::class);
     Route::post('/delete/{id}', [AssetRecommendationController::class, 'delete'])->name('assets.delete');
+    Route::resource('users', AdminController::class);
     });

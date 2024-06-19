@@ -4,16 +4,14 @@
         <div class="wrapper">
             <nav class="main-header navbar navbar-expand navbar-white navbar-light fixed">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown user-menu">
+                    <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                            <img src="https://assets.infyom.com/logo/blue_logo_150x150.png"
-                                class="user-image img-circle elevation-2" alt="User Image">
+                            <i class="nav-icon fas fa-user"></i>
                             <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                             <li class="user-header bg-primary">
-                                <img src="https://assets.infyom.com/logo/blue_logo_150x150.png"
-                                    class="img-circle elevation-2" alt="User Image">
+                                <img src="https://assets.infyom.com/logo/blue_logo_150x150.png" class="img-circle elevation-2" alt="User Image">
                                 <p>
                                     {{ Auth::user()->name }}
                                     <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
@@ -29,7 +27,7 @@
                                 </form>
                             </li>
                         </ul>
-                    </li>
+                    </li>                              
                 </ul>
             </nav>
 
@@ -50,6 +48,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
 
         

@@ -237,10 +237,6 @@
     </div>
 </div>
 
-<!-- Modal for asset ID 1 -->
-
-
-
 <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -316,7 +312,6 @@
 
 <script>
 $(document).ready(function() {
-    // Event handler for delete button click
     $('.delete-button').on('click', function() {
         var assetId = $(this).data('asset-id');
         console.log("Delete button clicked!");
@@ -326,10 +321,9 @@ $(document).ready(function() {
         $(modalSelector).modal('show');
     });
 
-    // Event delegation for confirm delete button inside modals
     $(document).on('click', '.confirm-delete', function() {
         var assetId = $(this).data('asset-id');
-        var reason = $('#reason' + assetId).val(); // Ensure correct ID selection here
+        var reason = $('#reason' + assetId).val(); 
 
         $.ajax({
             url: "{{ route('assets.delete', ['id' => ':asset_id']) }}".replace(':asset_id', assetId),
@@ -340,17 +334,14 @@ $(document).ready(function() {
             },
             success: function(response) {
                 $('#deleteModal' + assetId).modal('hide');
-                location.reload(); // Refresh the page or update table dynamically
+                location.reload(); 
             },
             error: function(xhr) {
-                // Handle error
                 console.error('Error deleting asset:', xhr);
-                // Optionally show an error message to the user
             }
         });
     });
 
-    // Event handler for popup link click
     $('.popup-link').on('click', function() {
         var functionalLocation = $(this).data('info');
         $('#functionalLocation').val(functionalLocation);
@@ -362,7 +353,6 @@ $(document).ready(function() {
         $('#defect2').val(defect2);
     });
 
-    // Event handler for sortable columns in the table
     $('.sortable').on('click', function() {
         var column = $(this).data('column');
         var order = $(this).data('order');
@@ -372,7 +362,6 @@ $(document).ready(function() {
         $(this).toggleClass('desc', newOrder === 'desc');
     });
 
-    // Function to sort the table rows
     function sortTable(column, order) {
         var rows = $('#assetTableBody tr').get();
         rows.sort(function(a, b) {
@@ -391,14 +380,12 @@ $(document).ready(function() {
         });
     }
 
-    // Event listener for file input change
     document.getElementById('fileInput').addEventListener('change', function(e) {
         var fileName = e.target.files[0].name;
         var label = document.querySelector('.custom-file-label');
         label.textContent = fileName;
     });
 
-    // Function to display success message
     function showSuccessMessage(message) {
         var successMessage = document.getElementById('successMessage');
         successMessage.innerText = message;
@@ -408,7 +395,6 @@ $(document).ready(function() {
         }, 5000);
     }
 
-    // Function to display error message
     function showErrorMessage(message) {
         var errorMessage = document.getElementById('errorMessage');
         errorMessage.innerText = message;
@@ -418,7 +404,6 @@ $(document).ready(function() {
         }, 5000);
     }
 
-    // Function to display date error messages
     function showDateErrorMessage(messages) {
         var errorMessageContainer = document.getElementById('dateErrorMessageContainer');
         var errorMessagesList = document.getElementById('dateErrorMessagesList');
@@ -438,7 +423,6 @@ $(document).ready(function() {
         }, 5000);
     }
 
-    // Handling Laravel validation errors
     @if ($errors->any())
     document.addEventListener('DOMContentLoaded', function() {
         var errors = @json($errors->all());
@@ -446,17 +430,14 @@ $(document).ready(function() {
     });
     @endif
 
-    // Handling success messages
     @if(session('success'))
     showSuccessMessage('{{ session('success') }}');
     @endif
 
-    // Handling error messages
     @if(session('error'))
     showErrorMessage('{{ session('error') }}');
     @endif
 
-    // Handling file warning messages
     @if(session('file_warning'))
     showErrorMessage('{{ session('file_warning') }}');
     @endif

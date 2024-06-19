@@ -54,6 +54,7 @@ class ApprovalController extends Controller
             'Recitified_Action' => 'Rejected', 
             'User_Name' => auth()->user()->name,
             'Asset_Name' => $approval->Functional_Location,
+            'reasons' => $request->input('reason'),
         ]);
 
         return redirect()->route('approval.index')->with('success', 'Asset rejected successfully.');

@@ -4,6 +4,7 @@
 <!-- Include Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
+
 <style>
     body {
         font-family: 'Roboto', sans-serif;
@@ -30,7 +31,8 @@
         font-size: 0.9rem; /* Adjust font size for file input label and alerts */
     }
 </style>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <div class="container">
     <div class="row justify-content-center mt-3 mb-3">
         <div class="col-md-10">
