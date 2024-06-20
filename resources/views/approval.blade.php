@@ -45,22 +45,26 @@
                         <table class="table table-bordered">
                             <thead class="thead-dark">
                                 <tr>
+                                    <th>Reported Date</th>
                                     <th>Functional Location</th>
                                     <th>Switchgear Brand</th>
                                     <th>Substation Name</th>
                                     <th>TEV</th>
                                     <th>Hotspot</th>
+                                    <th>Target Date</th>
                                     <th class="actions-column">Actions</th> 
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($pendingApprovals as $approval)
                                     <tr>
+                                        <td>{{ $approval->Date }}</td>
                                         <td>{{ $approval->Functional_Location }}</td>
                                         <td>{{ $approval->Switchgear_Brand }}</td>
                                         <td>{{ $approval->Substation_Name }}</td>
                                         <td>{{ $approval->TEV }}</td>
                                         <td>{{ $approval->Hotspot }}</td>
+                                        <td>{{ $approval->Target_Date }}</td>
                                         <td>
                                             <button type="button" class="btn btn-success btn-approve" data-action="{{ route('approval.approve', $approval->id) }}">Approve</button>
                                             <button type="button" class="btn btn-danger btn-reject" data-action="{{ route('approval.reject', $approval->id) }}">Reject</button>

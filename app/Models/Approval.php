@@ -19,5 +19,8 @@ class Approval extends Model
         'Defect',
         'Defect1',
         'Defect2',
+        'Target_Date',
+        'completed_status',
+        'Date',
     ];
 }

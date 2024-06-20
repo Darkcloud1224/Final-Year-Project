@@ -29,32 +29,42 @@ class AssetsImport implements ToCollection
     /**
      * @param array $row
      *
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return void
      */
     public function collection(Collection $rows)
     {
-        $existingFunctionalLocations = Assets::pluck('Functional_Location');
         $duplicateRows = [];
 
-        $count = 0;
         foreach ($rows as $index => $row) {
-            if ($count >= 2) { 
+            if ($index >= 2) { 
+
                 if (is_null($row[4]) || is_null($row[5])) {
-                    Session::flash('error', 'TEV or Hotspot column cannot be null in row. Please check back your uploaded excel file at column no ' . ($index + 1));
+                    Session::flash('error', 'TEV or Hotspot column cannot be null in row ' . ($index + 1));
                     continue;
                 }
-                $date = $this->excelSerialDateToPHPDate($row[1]);
+
                 $functionalLocation = $row[11];
+                $switchgearBrand = $row[8];
+                $substationName = $row[12];
+                $tev = $row[4];
+                $hotspot = $row[5];
+                $defect = $row[3];
+                $defect1 = $row[14];
+                $defect2 = $row[15];
+                $date = $this->excelSerialDateToPHPDate($row[1]); 
+                $targetDate = $this->excelSerialDateToPHPDate($row[20]); 
+                $completionStatus = $row[21]; 
 
                 $existingAsset = Assets::where('Functional_Location', $functionalLocation)
-                    ->where('Switchgear_Brand', $row[8])
-                    ->where('Substation_Name', $row[12])
-                    ->where('TEV', $row[4])
-                    ->where('Hotspot', $row[5])
-                    ->where('Defect', $row[3])
-                    ->where('Defect1', $row[14])
-                    ->where('Defect2', $row[15])
+                    ->where('Switchgear_Brand', $switchgearBrand)
+                    ->where('Substation_Name', $substationName)
+                    ->where('TEV', $tev)
+                    ->where('Hotspot', $hotspot)
+                    ->where('Defect', $defect)
+                    ->where('Defect1', $defect1)
+                    ->where('Defect2', $defect2)
                     ->where('Date', $date)
+                    ->where('Target_Date', $targetDate)
                     ->first();
 
                 if ($existingAsset) {
@@ -64,64 +74,97 @@ class AssetsImport implements ToCollection
 
                 $functionalLocationExists = Assets::where('Functional_Location', $functionalLocation)->exists();
 
-                if ($functionalLocationExists) {
-                    $defectMatch = Assets::where('Functional_Location', $functionalLocation)
-                        ->where('Defect', $row[3])
-                        ->where('Defect1', $row[14])
-                        ->where('Defect2', $row[15])
+                if (!$functionalLocationExists) {
+                    $assetEntry = new Assets([
+                        'Functional_Location' => $functionalLocation,
+                        'Switchgear_Brand' => $switchgearBrand,
+                        'Substation_Name' => $substationName,
+                        'TEV' => $tev,
+                        'Hotspot' => $hotspot,
+                        'Defect' => $defect,
+                        'Defect1' => $defect1,
+                        'Defect2' => $defect2,
+                        'Date' => $date,
+                        'Target_Date' => $targetDate,
+                    ]);
+                    $assetEntry->save();
+                    Session::flash('success', 'Data imported successfully and new asset created.');
+                } else {
+                    $defectsMatch = Assets::where('Functional_Location', $functionalLocation)
+                        ->where('Defect', $defect)
+                        ->where('Defect1', $defect1)
+                        ->where('Defect2', $defect2)
                         ->exists();
 
-                    if ($defectMatch) {
-                        $approvalEntry = new Approval([
-                            'Functional_Location' => $row[11],
-                            'Switchgear_Brand' => $row[8],
-                            'Substation_Name' => $row[12],
-                            'TEV' => $row[4],
-                            'Hotspot' => $row[5],
-                            'Defect' => $row[3],
-                            'Defect1' => $row[14],
-                            'Defect2' => $row[15],
-                            'Date' => $date,
-                        ]);
-                        $approvalEntry->save();
-                        Session::flash('success', 'Data imported successfully and asset moved to approval.');
+                    if ($defectsMatch) {
+                        $columnsNotMatch = $this->compareNonDefectColumns($functionalLocation, $row);
+
+                        if ($columnsNotMatch) {
+                            $approvalEntry = new Approval([
+                                'Functional_Location' => $functionalLocation,
+                                'Switchgear_Brand' => $switchgearBrand,
+                                'Substation_Name' => $substationName,
+                                'TEV' => $tev,
+                                'Hotspot' => $hotspot,
+                                'Defect' => $defect,
+                                'Defect1' => $defect1,
+                                'Defect2' => $defect2,
+                                'Date' => $date,
+                                'Target_Date' => $targetDate,
+                                'Completion_Status' => $completionStatus,
+                            ]);
+                            $approvalEntry->save();
+                            Session::flash('success', 'Data imported successfully and asset moved to approval.');
+                        } else {
+                            $duplicateRows[] = $index + 1;
+                        }
                     } else {
                         $assetEntry = new Assets([
-                            'Functional_Location' => $row[11],
-                            'Switchgear_Brand' => $row[8],
-                            'Substation_Name' => $row[12],
-                            'TEV' => $row[4],
-                            'Hotspot' => $row[5],
-                            'Defect' => $row[3],
-                            'Defect1' => $row[14],
-                            'Defect2' => $row[15],
+                            'Functional_Location' => $functionalLocation,
+                            'Switchgear_Brand' => $switchgearBrand,
+                            'Substation_Name' => $substationName,
+                            'TEV' => $tev,
+                            'Hotspot' => $hotspot,
+                            'Defect' => $defect,
+                            'Defect1' => $defect1,
+                            'Defect2' => $defect2,
                             'Date' => $date,
+                            'Target_Date' => $targetDate,
                         ]);
                         $assetEntry->save();
                         Session::flash('success', 'Data imported successfully and new asset created.');
                     }
-                } else {
-                    $assetEntry = new Assets([
-                        'Functional_Location' => $row[11],
-                        'Switchgear_Brand' => $row[8],
-                        'Substation_Name' => $row[12],
-                        'TEV' => $row[4],
-                        'Hotspot' => $row[5],
-                        'Defect' => $row[3],
-                        'Defect1' => $row[14],
-                        'Defect2' => $row[15],
-                        'Date' => $date,
-                    ]);
-                    $assetEntry->save();
-                    Session::flash('success', 'Data imported successfully and new asset created.');
                 }
-            } else {
-                $count++;
             }
         }
 
         if (!empty($duplicateRows)) {
             Session::flash('error', 'Duplicate entries found at rows: ' . implode(', ', $duplicateRows) . '. Kindly check your file again.');
         }
+    }
+
+    /**
+     * Compare non-defect columns between matched asset and current row.
+     *
+     * @param string $functionalLocation
+     * @param array $row
+     * @return bool
+     */
+    private function compareNonDefectColumns($functionalLocation, $row)
+    {
+        $matchedAsset = Assets::where('Functional_Location', $functionalLocation)
+            ->first();
+
+        if ($matchedAsset) {
+            if ($matchedAsset->Switchgear_Brand != $row[8] ||
+                $matchedAsset->Substation_Name != $row[12] ||
+                $matchedAsset->TEV != $row[4] ||
+                $matchedAsset->Hotspot != $row[5] ||
+                $matchedAsset->Completion_Status != $row[21]) {
+                return true; 
+            }
+        }
+
+        return false; 
     }
 }
