@@ -52,6 +52,7 @@
                                     <th>TEV</th>
                                     <th>Hotspot</th>
                                     <th>Target Date</th>
+                                    <th>Completed Status / Date</th>
                                     <th class="actions-column">Actions</th> 
                                 </tr>
                             </thead>
@@ -65,6 +66,7 @@
                                         <td>{{ $approval->TEV }}</td>
                                         <td>{{ $approval->Hotspot }}</td>
                                         <td>{{ $approval->Target_Date }}</td>
+                                        <td>{{ $approval->completed_status }}</td>
                                         <td>
                                             <button type="button" class="btn btn-success btn-approve" data-action="{{ route('approval.approve', $approval->id) }}">Approve</button>
                                             <button type="button" class="btn btn-danger btn-reject" data-action="{{ route('approval.reject', $approval->id) }}">Reject</button>

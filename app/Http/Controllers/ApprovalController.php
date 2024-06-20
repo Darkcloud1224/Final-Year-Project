@@ -31,6 +31,7 @@ class ApprovalController extends Controller
             'Defect1' => $approval->Defect1,
             'Defect2' => $approval->Defect2,
             'Target_Date' =>$approval->Target_Date,
+            'completed_status'=>$approval->completed_status,
         ]);
 
         ApprovalLog::create([

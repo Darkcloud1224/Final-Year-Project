@@ -53,7 +53,7 @@ class AssetsImport implements ToCollection
                 $defect2 = $row[15];
                 $date = $this->excelSerialDateToPHPDate($row[1]); 
                 $targetDate = $this->excelSerialDateToPHPDate($row[20]); 
-                $completionStatus = $row[21]; 
+                $completionStatus = $this->excelSerialDateToPHPDate($row[21]); 
 
                 $existingAsset = Assets::where('Functional_Location', $functionalLocation)
                     ->where('Switchgear_Brand', $switchgearBrand)
@@ -65,6 +65,7 @@ class AssetsImport implements ToCollection
                     ->where('Defect2', $defect2)
                     ->where('Date', $date)
                     ->where('Target_Date', $targetDate)
+                    ->where('completed_status', $completionStatus)
                     ->first();
 
                 if ($existingAsset) {
@@ -86,6 +87,7 @@ class AssetsImport implements ToCollection
                         'Defect2' => $defect2,
                         'Date' => $date,
                         'Target_Date' => $targetDate,
+                        'completed_status'=>$completionStatus,
                     ]);
                     $assetEntry->save();
                     Session::flash('success', 'Data imported successfully and new asset created.');
@@ -111,7 +113,7 @@ class AssetsImport implements ToCollection
                                 'Defect2' => $defect2,
                                 'Date' => $date,
                                 'Target_Date' => $targetDate,
-                                'Completion_Status' => $completionStatus,
+                                'completed_status' => $completionStatus,
                             ]);
                             $approvalEntry->save();
                             Session::flash('success', 'Data imported successfully and asset moved to approval.');
@@ -130,6 +132,7 @@ class AssetsImport implements ToCollection
                             'Defect2' => $defect2,
                             'Date' => $date,
                             'Target_Date' => $targetDate,
+                            'completed_status'=>$completionStatus,
                         ]);
                         $assetEntry->save();
                         Session::flash('success', 'Data imported successfully and new asset created.');

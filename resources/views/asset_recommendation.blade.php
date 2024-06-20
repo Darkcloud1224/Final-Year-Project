@@ -142,7 +142,9 @@ use Carbon\Carbon;
                             <td>{{ $asset->TEV }}</td>
                             <td>{{ $asset->Hotspot }}</td>
                             <td>
-                                @if ($asset->acknowledgment_status)
+                                @if ($asset->completed_status)
+                                    N/A
+                                @elseif ($asset->acknowledgment_status)
                                     {{ \Carbon\Carbon::parse($asset->acknowledgment_status)->format('Y-m-d H:i:s') }}
                                 @else
                                     <form action="{{ route('assets.acknowledge', $asset->id) }}" method="POST">
@@ -151,7 +153,13 @@ use Carbon\Carbon;
                                     </form>
                                 @endif
                             </td>
-                            <td>{{ $asset->ongoing_status }}</td>
+                            <td>
+                                @if ($asset->completed_status)
+                                    N/A
+                                @else
+                                    {{ $asset->ongoing_status }}
+                                @endif
+                            </td>
                             <td>{{ $asset->completed_status }}</td>
                             <td>
                                 @if ($asset->completed_status)
