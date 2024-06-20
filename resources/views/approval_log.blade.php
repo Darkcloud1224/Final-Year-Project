@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Include Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
@@ -10,24 +9,24 @@
     }
 
     .table th, .table td {
-        font-size: 0.9rem; /* Smaller text size for table cells */
+        font-size: 0.9rem; 
     }
 
     .table th {
-        background-color: #343a40; /* Dark header background */
-        color: #ffffff; /* White text for header */
+        background-color: #343a40; 
+        color: #ffffff;
     }
 
     .btn {
-        font-size: 0.9rem; /* Smaller text size for buttons */
+        font-size: 0.9rem; 
     }
 
     .modal-title, .modal-body label {
-        font-size: 1rem; /* Consistent text size in modals */
+        font-size: 1rem; 
     }
 
     .custom-file-label, .alert {
-        font-size: 0.9rem; /* Adjust font size for file input label and alerts */
+        font-size: 0.9rem; 
     }
 </style>
 

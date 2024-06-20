@@ -18,31 +18,32 @@ class ApprovalController extends Controller
     }
 
     public function approve(Request $request, $id)
-{
-    $approval = Approval::findOrFail($id);
-    Assets::create([
-        'Functional_Location' => $approval->Functional_Location,
-        'Switchgear_Brand' => $approval->Switchgear_Brand,
-        'Substation_Name' => $approval->Substation_Name,
-        'TEV' => $approval->TEV,
-        'Hotspot' => $approval->Hotspot,
-        'Date' => $approval->Date,
-        'Defect' => $approval->Defect,
-        'Defect1' => $approval->Defect1,
-        'Defect2' => $approval->Defect2,
-    ]);
+    {
+        $approval = Approval::findOrFail($id);
+        Assets::create([
+            'Functional_Location' => $approval->Functional_Location,
+            'Switchgear_Brand' => $approval->Switchgear_Brand,
+            'Substation_Name' => $approval->Substation_Name,
+            'TEV' => $approval->TEV,
+            'Hotspot' => $approval->Hotspot,
+            'Date' => $approval->Date,
+            'Defect' => $approval->Defect,
+            'Defect1' => $approval->Defect1,
+            'Defect2' => $approval->Defect2,
+        ]);
 
-    ApprovalLog::create([
-        'Recitified_Action' => 'Approved', 
-        'User_Name' => auth()->user()->name,
-        'Asset_Name' => $approval->Functional_Location,
-        'reasons' => "Approved by user",
-    ]);
+        ApprovalLog::create([
+            'Recitified_Action' => 'Approved', 
+            'User_Name' => auth()->user()->name,
+            'Asset_Name' => $approval->Functional_Location,
+            'reasons' => $request->input('reason'),
+        ]);
 
-    $approval->delete();
+        $approval->delete();
 
-    return redirect()->route('approval.index')->with('success', 'Asset approved successfully.');
-}
+        return redirect()->route('approval.index')->with('success', 'Asset approved successfully.');
+    }
+
 
     public function reject(Request $request, $id)
     {
