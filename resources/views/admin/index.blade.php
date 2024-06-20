@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Manage Users</h1>
+    <br></br>
     <a href="{{ route('users.create') }}" class="btn btn-primary">Add User</a>
 
     @if (session('success'))

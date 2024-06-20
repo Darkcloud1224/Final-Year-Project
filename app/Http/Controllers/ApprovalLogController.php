@@ -9,7 +9,11 @@ class ApprovalLogController extends Controller
 {
     public function index()
     {
-        $approvalLogs = ApprovalLog::all(); 
+        $query = ApprovalLog::query();
+
+        $query->orderBy('id', 'desc');
+
+        $approvalLogs = $query->get();
         return view('approval_log', compact('approvalLogs'));
     }
 }

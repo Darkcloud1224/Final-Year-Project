@@ -45,6 +45,9 @@
         white-space: nowrap; 
     }
 </style>
+@php
+use Carbon\Carbon;
+@endphp
 
 <div class="container">
     <div class="card mt-3 mb-3">
@@ -97,7 +100,7 @@
                             <th>Hotspot</th>
                             <th>Acknowledgment Status</th>
                             <th>Ongoing Status</th>
-                            <th>Completed Status</th>
+                            <th>Completed Status / Date</th>
                             <th>Update Status</th>
                             <th>Actions</th>
                         </tr>
@@ -109,7 +112,7 @@
                             <td>
                                 <a href="#" class="popup-link" data-toggle="modal" data-target="#infoModal" data-info="{{ $asset->Functional_Location }}" data-defect="{{ $asset->Defect }}" data-defect1="{{ $asset->Defect1 }}" data-defect2="{{ $asset->Defect2 }}">{{ $asset->Functional_Location }}</a>
                             </td>
-                            <td>{{ $asset->Date}}</td>
+                            <td>{{ Carbon::parse($asset->Date)->format('d-m-Y') }}</td> 
                             <td>{{ $asset->Target_Date}}</td>
                             <td>{{ $asset->Switchgear_Brand }}</td>
                             <td>{{ $asset->Substation_Name }}</td>

@@ -36,8 +36,9 @@
 <div class="container">
     <div class="row justify-content-center mt-3 mb-3">
         <div class="col-md-10">
-            <h2>Report Log</h2>
             <div class="table-responsive">
+                <h4>Report Log</h4>
+
                 <table class="table table-bordered mt-3">
                     <thead class="thead-dark">
                         <tr>

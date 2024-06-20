@@ -33,9 +33,9 @@
 <div class="container">
     <div class="row justify-content-center mt-3 mb-3">
         <div class="col-md-10">
-            <h2>Approval Log</h2>
             <div class="table-responsive">
                 <table class="table table-bordered mt-3">
+                    <h4>Approval Log</h4>
                     <thead class="thead-dark">
                         <tr>
                             <th>User</th>

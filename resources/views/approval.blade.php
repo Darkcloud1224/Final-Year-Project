@@ -31,15 +31,14 @@
     <div class="row justify-content-center mt-3 mb-5">
         <div class="col-md-10">
             <div class="card">
-                <div class="card-header">Pending Approvals</div>
-
                 <div class="card-body">
                     @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
                         </div>
                     @endif
-
+                    <h4>Approval</h4>
+                    <br></br>
                     @if ($pendingApprovals->isEmpty())
                         <p>No pending approvals.</p>
                     @else
