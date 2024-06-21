@@ -10,6 +10,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DeleteRequestController; 
 use App\Http\Controllers\DeleteRequestLogController;
+use App\Http\Controllers\SwitchgearClassificationController;
+use App\Http\Controllers\SwitchgearProgressMonitoringController;
+
 
 
 /*
@@ -48,5 +51,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reject/{id}', [DeleteRequestController::class, 'rejectDeleteRequest'])->name('delete_requests.reject');
     Route::resource('users', AdminController::class);
     Route::get('/delete_request_logs', [DeleteRequestLogController::class, 'index'])->name('delete_request_logs.index');
+    Route::get('/switchgear-classification', [SwitchgearClassificationController::class, 'index'])->name('switchgear_classification.index');
+    Route::get('/switchgear-progress-monitoring', [SwitchgearProgressMonitoringController::class, 'index'])->name('switchgear_progress_monitoring.index');
+    
 
     });

@@ -38,4 +38,12 @@
         <i class="nav-icon far fa-address-card"></i>
         <p>Manage Users</p>
     </a>
+    <a href="{{ route('switchgear_classification.index') }}" class="nav-link {{ Request::is('switchgear_classification*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-chart-bar"></i>
+        <p>Switchgear Classification</p>
+    </a>
+    <a href="{{ route('switchgear_progress_monitoring.index') }}" class="nav-link {{ Request::is('switchgear_progress_monitoring*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-chart-line"></i>
+        <p>Switchgear Progress Monitoring</p>
+    </a>
 </li>

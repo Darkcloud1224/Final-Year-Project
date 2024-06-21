@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Assets;
+use Illuminate\Support\Facades\DB;
+
+class SwitchgearProgressMonitoringController extends Controller
+{
+    public function index()
+    {
+        $rectifiedCount = Assets::whereNotNull('completed_status')->count();
+        $pendingCount = Assets::whereNull('completed_status')->count();
+
+        $assets = Assets::all();
+
+        // Calculate the average days to rectify for each defect type
+        $defectTypes = [
+            'CORONA DISCHARGE',
+            'ARCHING SOUND',
+            'TRACKING SOUND',
+            'HOTSPOT',
+            'ULTRASOUND',
+            'MECHANICAL VIBRATION'
+        ];
+
+        $averageRectificationTimes = [];
+        foreach ($defectTypes as $defect) {
+            $averageRectificationTimes[$defect] = Assets::where('defect1', $defect)
+                ->whereNotNull('completed_status')
+                ->avg(DB::raw('DATEDIFF(completed_status, Date)'));
+        }
+
+        // Calculate the criticality of the assets
+        $criticalityLevels = [
+            'Clear' => 0,
+            'Minor' => 0,
+            'Major' => 0,
+            'Critical' => 0
+        ];
+
+        foreach ($criticalityLevels as $level => $count) {
+            $criticalityLevels[$level] = Assets::where('Health_Status', $level)->count();
+        }
+
+        return view('switchgear_progress_monitoring', compact('rectifiedCount', 'pendingCount', 'assets', 'averageRectificationTimes', 'criticalityLevels'));
+    }
+}
