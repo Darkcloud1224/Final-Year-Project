@@ -41,7 +41,7 @@ class AssetRecommendationController extends Controller
 
         $query->orderBy('id', 'desc');
 
-        $assets = $query->get(); 
+        $assets = $query->paginate(10); 
         $users = User::all();
         return view('asset_recommendation', compact('assets','users'));
     }

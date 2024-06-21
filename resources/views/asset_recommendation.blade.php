@@ -246,10 +246,15 @@ use Carbon\Carbon;
                         @endforeach
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center">
+                    {{ $assets->links() }}
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
 
 <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">

@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Approval;
 use Illuminate\Support\Facades\View;
+use Illuminate\Pagination\Paginator;
+
 
 
 class AppServiceProvider extends ServiceProvider
@@ -29,5 +31,8 @@ class AppServiceProvider extends ServiceProvider
             $pendingApprovalsCount = Approval::count();
             $view->with('pendingApprovalsCount', $pendingApprovalsCount);
         });
+
+        Paginator::defaultView('custom-pagination');
+
     }
 }
