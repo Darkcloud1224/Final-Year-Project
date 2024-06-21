@@ -22,8 +22,6 @@
                             <th>Substation Name</th>
                             <th>TEV</th>
                             <th>Hotspot</th>
-                            <th>Target Date</th>
-                            <th>Completed Status</th>
                             <th>Reason</th>
                         </tr>
                     </thead>
@@ -37,8 +35,6 @@
                             <td>{{ $log->Substation_Name }}</td>
                             <td>{{ $log->TEV }}</td>
                             <td>{{ $log->Hotspot }}</td>
-                            <td>{{ $log->Target_Date }}</td>
-                            <td>{{ $log->completed_status }}</td>
                             <td>{{ $log->reason }}</td>
                         </tr>
                         @endforeach

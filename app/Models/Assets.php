@@ -22,6 +22,7 @@ class Assets extends Model
         'Defect2',
         'Target_Date',
         'completed_status',
+        'Average', 'PendingDays',
     ];
 
 }

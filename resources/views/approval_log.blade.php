@@ -38,7 +38,7 @@
                     <h4>Approval Log</h4>
                     <thead class="thead-dark">
                         <tr>
-                            <th>User</th>
+                            <th>Approved By</th>
                             <th>Functional Location</th>
                             <th>Action</th>
                             <th>Reasons</th>

@@ -5,7 +5,7 @@
     </a>
     <a href="{{ route('asset_recommendation') }}" class="nav-link {{ Request::is('asset_recommendation*') ? 'active' : '' }}">
         <i class="nav-icon fa fa-lightbulb"></i>
-        <p>Asset Maintenance Recommendation</p>
+        <p>Swithcgear List</p>
     </a>
     <a href="{{ route('report_generation.index') }}" class="nav-link {{ Request::is('report_generation*') ? 'active' : '' }}">
         <i class="nav-icon fas fa-cloud-download-alt"></i>

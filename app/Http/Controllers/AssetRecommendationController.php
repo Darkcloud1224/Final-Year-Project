@@ -44,6 +44,28 @@ class AssetRecommendationController extends Controller
         $query->orderBy('id', 'desc');
 
         $assets = $query->paginate(10); 
+        foreach ($assets as $asset) {
+            if ($asset->completed_status && $asset->Date) {
+                $completionDate = Carbon::parse($asset->completed_status);
+                $reportDate = Carbon::parse($asset->Date);
+                $asset->Average = $completionDate->diffInDays($reportDate);
+            } else {
+                $asset->Average = null;  
+            }
+
+            if (!$asset->completed_status && $asset->Target_Date) {
+                $targetDate = Carbon::parse($asset->Target_Date);
+                if ($targetDate->isPast()) {
+                    $asset->PendingDays = Carbon::now()->diffInDays($targetDate);
+                } else {
+                    $asset->PendingDays = null;  
+                }
+            } else {
+                $asset->PendingDays = null;  
+            }
+
+            $asset->save();
+        }
         $users = User::all();
         return view('asset_recommendation', compact('assets','users'));
     }
@@ -122,21 +144,45 @@ class AssetRecommendationController extends Controller
         $progressDate = $request->input('progressDate');
         $rectifyStatus = $request->input('rectifyStatus');
 
+        if ($progressDate <= $asset->Date) {
+            session()->flash('error', 'Progress date must be after the report date');
+            return redirect()->back()->withInput();
+        }
+
+        if ($asset->acknowledgment_status && $progressDate <= $asset->acknowledgment_status) {
+            session()->flash('error', 'Progress date must be after the acknowledgment date');
+            return redirect()->back()->withInput();
+        }
+
         if ($rectifyStatus == 'ongoing') {
             $asset->ongoing_status = $progressDate;
             $asset->completed_status = null;
         } elseif ($rectifyStatus == 'completed') {
-            if ($asset->ongoing_status && $progressDate > $asset->ongoing_status) {
-                $asset->completed_status = $progressDate;
-            } else {
-                return redirect()->back()->withErrors([
-                    'error' => 'Completed status date must be after the ongoing status date'
-                ])->withInput();
+            if (!$asset->ongoing_status || $progressDate <= $asset->ongoing_status) {
+                session()->flash('error', 'Completion date must be after the ongoing status date');
+                return redirect()->back()->withInput();
             }
+
+            if ($progressDate <= $asset->Date) {
+                session()->flash('error', 'Completion date must be after the report date');
+                return redirect()->back()->withInput();
+            }
+
+            if ($asset->acknowledgment_status && $progressDate <= $asset->acknowledgment_status) {
+                session()->flash('error', 'Completion date must be after the acknowledgment date');
+                return redirect()->back()->withInput();
+            }
+
+            $asset->completed_status = $progressDate;
         }
+
         $asset->save();
-        return redirect()->route('asset_recommendation')->with('success', 'Asset status updated successfully.');
+        session()->flash('success', 'Asset status updated successfully.');
+        return redirect()->route('asset_recommendation');
     }
+
+
+
 
     public function delete(Request $request, $id)
     {

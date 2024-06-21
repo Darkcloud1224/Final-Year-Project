@@ -95,14 +95,17 @@ use Carbon\Carbon;
                             <th>Target Date</th>
                             <th>Switchgear Brand</th>
                             <th>Substation Name</th>
-                            <th class="sortable health-status-header" data-column="health_status" data-order="asc">Health Status</th>
+                            <th class="sortable health-status-header" data-column="health_status" data-order="asc">Criticality</th>
                             <th>TEV</th>
                             <th>Hotspot</th>
                             <th>Acknowledgment Status</th>
                             <th>Ongoing Status</th>
                             <th>Completed Status / Date</th>
                             <th>Update Status</th>
+                            <th>Average</th>  
+                            <th>Pending Days</th> 
                             <th>Actions</th>
+ 
                         </tr>
                     </thead>
                     <tbody id="assetTableBody">
@@ -119,26 +122,41 @@ use Carbon\Carbon;
                             <td>
                                 @php
                                     $Health_Status = 'Unknown';
-                                    if ($asset->TEV > 0 && $asset->TEV < 5)
-                                        $Health_Status = 'Minor';
-                                    elseif ($asset->TEV >= 5 && $asset->TEV < 10)
-                                        $Health_Status = 'Major';
-                                    elseif ($asset->TEV >= 10)
+                            
+                                    // Calculate pending_days if not already done
+                                    if (!$asset->completed_status && $asset->Target_Date) {
+                                        $targetDate = \Carbon\Carbon::parse($asset->Target_Date);
+                                        $pending_days = $targetDate->isPast() ? \Carbon\Carbon::now()->diffInDays($targetDate) : 0;
+                                    } else {
+                                        $pending_days = 0;
+                                    }
+                            
+                                    // Determine health status based on the given conditions
+                                    if ($asset->completed_status) {
+                                        $Health_Status = 'Clear';
+                                    } elseif (!$asset->completed_status && $pending_days > 90) {
                                         $Health_Status = 'Critical';
-
+                                    } elseif (!$asset->completed_status && $pending_days >= 31 && $pending_days <= 89) {
+                                        $Health_Status = 'Major';
+                                    } elseif (!$asset->completed_status && $pending_days >= 0 && $pending_days <= 30) {
+                                        $Health_Status = 'Minor';
+                                    }
+                            
                                     $asset->Health_Status = $Health_Status;
                                     $asset->save();
                                 @endphp
-
-                                @if ($Health_Status == 'Minor')
+                            
+                                @if ($Health_Status == 'Clear')
+                                    <span class="badge badge-primary">Clear</span>
+                                @elseif ($Health_Status == 'Minor')
                                     <span class="badge badge-success">Minor</span>
                                 @elseif ($Health_Status == 'Major')
                                     <span class="badge badge-warning">Major</span>
                                 @elseif ($Health_Status == 'Critical')
                                     <span class="badge badge-danger">Critical</span>
                                 @endif
-
                             </td>
+                            
                             <td>{{ $asset->TEV }}</td>
                             <td>{{ $asset->Hotspot }}</td>
                             <td>
@@ -168,6 +186,8 @@ use Carbon\Carbon;
                                     <button class="btn btn-primary btn-sm update-button" data-toggle="modal" data-target="#updateModal{{$asset->id}}">Update</button>
                                 @endif
                             </td>
+                            <td>{{ $asset->Average ?? '0'}} days</td>  
+                            <td>{{ $asset->PendingDays ?? '0' }} days</td>  
                             <td>
                                 @if ($asset->delete_request)
                                     <button class="btn btn-outline-info btn-sm" disabled>Delete Request Submitted</button>
