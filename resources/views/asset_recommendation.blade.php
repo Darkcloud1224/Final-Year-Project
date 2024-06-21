@@ -169,11 +169,14 @@ use Carbon\Carbon;
                                 @endif
                             </td>
                             <td>
-                                <button class="btn btn-danger delete-button" data-toggle="modal" data-target="#deleteModal{{$asset->id}}" data-asset-id="{{ $asset->id }}">
-                                    Delete
-                                </button>
+                                @if ($asset->delete_request)
+                                    <button class="btn btn-outline-info btn-sm" disabled>Delete Request Submitted</button>
+                                @else
+                                    <button class="btn btn-danger delete-button" data-toggle="modal" data-target="#deleteModal{{$asset->id}}" data-asset-id="{{ $asset->id }}">
+                                        Delete
+                                    </button>
+                                @endif
                             </td>
-                            
                         </tr>
 
                         <div class="modal fade" id="updateModal{{$asset->id}}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel{{$asset->id}}" aria-hidden="true">

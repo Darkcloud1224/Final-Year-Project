@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\ReportLog;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Models\DeleteRequest;
+
 use Carbon\Carbon;
 
 class AssetRecommendationController extends Controller
@@ -143,10 +145,23 @@ class AssetRecommendationController extends Controller
         ]);
 
         $asset = Assets::findOrFail($id);
-        $asset->delete();
+        DeleteRequest::create([
+            'Functional_Location' => $asset->Functional_Location,
+            'Switchgear_Brand' => $asset->Switchgear_Brand,
+            'Substation_Name' => $asset->Substation_Name,
+            'TEV' => $asset->TEV,
+            'Hotspot' => $asset->Hotspot,
+            'Date' => $asset->Date,
+            'Defect' => $asset->Defect,
+            'Defect1' => $asset->Defect1,
+            'Defect2' => $asset->Defect2,
+            'Target_Date' =>$asset->Target_Date,
+            'completed_status'=>$asset->completed_status,
+            'reason' => $request->reason,
+            'User_Name' => auth()->user()->name,
+        ]);
 
-
-        return redirect()->route('asset_recommendation')->with('success', 'Asset deleted successfully.');
+        return redirect()->route('asset_recommendation')->with('success', 'Asset deletion request has been submited.');
     }
 
 }

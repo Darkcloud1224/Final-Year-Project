@@ -26,6 +26,14 @@
         <i class="nav-icon fa fa-check-square"></i>
         <p>Approval Log</p>
     </a>
+    <a href="{{ route('delete_requests.index') }}" class="nav-link {{ Request::is('delete_requests*') ? 'active' : '' }}">
+        <i class="nav-icon far fa-address-card"></i>
+        <p>Delete Request</p>
+    </a>
+    <a href="{{ route('delete_request_logs.index') }}" class="nav-link {{ Request::is('delete_request_logs*') ? 'active' : '' }}">
+        <i class="nav-icon far fa-address-card"></i>
+        <p>Delete Request Log</p>
+    </a>
     <a href="{{ route('users.index') }}" class="nav-link {{ Request::is('users*') ? 'active' : '' }}">
         <i class="nav-icon far fa-address-card"></i>
         <p>Manage Users</p>

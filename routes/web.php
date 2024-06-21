@@ -8,6 +8,8 @@ use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\ApprovalLogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DeleteRequestController; 
+use App\Http\Controllers\DeleteRequestLogController;
 
 
 /*
@@ -41,5 +43,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/approval/{id}/reject', [ApprovalController::class, 'reject'])->name('approval.reject');
     Route::resource('approval_log', ApprovalLogController::class);
     Route::post('/delete/{id}', [AssetRecommendationController::class, 'delete'])->name('assets.delete');
+    Route::get('/delete_requests', [DeleteRequestController::class, 'index'])->name('delete_requests.index');
+    Route::post('/approve/{id}', [DeleteRequestController::class, 'approveDeleteRequest'])->name('delete_requests.approve');
+    Route::post('/reject/{id}', [DeleteRequestController::class, 'rejectDeleteRequest'])->name('delete_requests.reject');
     Route::resource('users', AdminController::class);
+    Route::get('/delete_request_logs', [DeleteRequestLogController::class, 'index'])->name('delete_request_logs.index');
+
     });
