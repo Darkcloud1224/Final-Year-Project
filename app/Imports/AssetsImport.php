@@ -7,6 +7,7 @@ use App\Models\Approval;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class AssetsImport implements ToCollection
 {
@@ -33,6 +34,15 @@ class AssetsImport implements ToCollection
      */
     public function collection(Collection $rows)
     {
+        $defaultAverageDays = [
+            'CORONA DISCHARGE' => 70,
+            'ARCHING SOUND' => 25,
+            'TRACKING SOUND' => 47,
+            'HOTSPOT' => 39,
+            'ULTRASOUND' => 52,
+            'MECHANICAL VIBRATION' => 54,
+        ];
+        
         $duplicateRows = [];
 
         foreach ($rows as $index => $row) {
@@ -46,8 +56,18 @@ class AssetsImport implements ToCollection
                 $defect1 = $row[14];
                 $defect2 = $row[15];
                 $date = $this->excelSerialDateToPHPDate($row[1]); 
-                $targetDate = $this->excelSerialDateToPHPDate($row[20]); 
-                $completionStatus = $this->excelSerialDateToPHPDate($row[21]);
+                $targetDate = $row[20]; 
+                $completionStatus = $row[21];
+
+                if (is_null($targetDate) && is_null($completionStatus)) {
+                    $defectCategory = strtoupper($defect1);
+                    $defaultDays = isset($defaultAverageDays[$defectCategory]) ? $defaultAverageDays[$defectCategory] : 0;
+
+                    $reportDate = Carbon::parse($date);
+                    $targetDate = $reportDate->addDays($defaultDays)->format('Y-m-d');
+                } else {
+                    $targetDate = $this->excelSerialDateToPHPDate($targetDate);
+                }
 
                 $existingAssetQuery = Assets::where('Functional_Location', $functionalLocation)
                     ->where('Switchgear_Brand', $switchgearBrand)
