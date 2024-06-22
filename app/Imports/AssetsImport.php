@@ -27,7 +27,7 @@ class AssetsImport implements ToCollection
     }
 
     /**
-     * @param array $row
+     * @param Collection $rows
      *
      * @return void
      */
@@ -36,13 +36,7 @@ class AssetsImport implements ToCollection
         $duplicateRows = [];
 
         foreach ($rows as $index => $row) {
-            if ($index >= 2) { 
-
-                if (is_null($row[4]) || is_null($row[5])) {
-                    Session::flash('error', 'TEV or Hotspot column cannot be null in row ' . ($index + 1));
-                    continue;
-                }
-
+            if ($index >= 2) {
                 $functionalLocation = $row[11];
                 $switchgearBrand = $row[8];
                 $substationName = $row[12];
@@ -53,20 +47,31 @@ class AssetsImport implements ToCollection
                 $defect2 = $row[15];
                 $date = $this->excelSerialDateToPHPDate($row[1]); 
                 $targetDate = $this->excelSerialDateToPHPDate($row[20]); 
-                $completionStatus = $this->excelSerialDateToPHPDate($row[21]); 
+                $completionStatus = $this->excelSerialDateToPHPDate($row[21]);
 
-                $existingAsset = Assets::where('Functional_Location', $functionalLocation)
+                $existingAssetQuery = Assets::where('Functional_Location', $functionalLocation)
                     ->where('Switchgear_Brand', $switchgearBrand)
                     ->where('Substation_Name', $substationName)
-                    ->where('TEV', $tev)
-                    ->where('Hotspot', $hotspot)
                     ->where('Defect', $defect)
                     ->where('Defect1', $defect1)
                     ->where('Defect2', $defect2)
                     ->where('Date', $date)
                     ->where('Target_Date', $targetDate)
-                    ->where('completed_status', $completionStatus)
-                    ->first();
+                    ->where('completed_status', $completionStatus);
+
+                if (is_null($tev)) {
+                    $existingAssetQuery->whereNull('TEV');
+                } else {
+                    $existingAssetQuery->where('TEV', $tev);
+                }
+
+                if (is_null($hotspot)) {
+                    $existingAssetQuery->whereNull('Hotspot');
+                } else {
+                    $existingAssetQuery->where('Hotspot', $hotspot);
+                }
+
+                $existingAsset = $existingAssetQuery->first();
 
                 if ($existingAsset) {
                     $duplicateRows[] = $index + 1;
@@ -87,16 +92,17 @@ class AssetsImport implements ToCollection
                         'Defect2' => $defect2,
                         'Date' => $date,
                         'Target_Date' => $targetDate,
-                        'completed_status'=>$completionStatus,
+                        'completed_status' => $completionStatus,
                     ]);
                     $assetEntry->save();
                     Session::flash('success', 'Data imported successfully and new asset created.');
                 } else {
-                    $defectsMatch = Assets::where('Functional_Location', $functionalLocation)
+                    $defectsMatchQuery = Assets::where('Functional_Location', $functionalLocation)
                         ->where('Defect', $defect)
                         ->where('Defect1', $defect1)
-                        ->where('Defect2', $defect2)
-                        ->exists();
+                        ->where('Defect2', $defect2);
+
+                    $defectsMatch = $defectsMatchQuery->exists();
 
                     if ($defectsMatch) {
                         $columnsNotMatch = $this->compareNonDefectColumns($functionalLocation, $row);
@@ -132,7 +138,7 @@ class AssetsImport implements ToCollection
                             'Defect2' => $defect2,
                             'Date' => $date,
                             'Target_Date' => $targetDate,
-                            'completed_status'=>$completionStatus,
+                            'completed_status' => $completionStatus,
                         ]);
                         $assetEntry->save();
                         Session::flash('success', 'Data imported successfully and new asset created.');
@@ -163,7 +169,7 @@ class AssetsImport implements ToCollection
                 $matchedAsset->Substation_Name != $row[12] ||
                 $matchedAsset->TEV != $row[4] ||
                 $matchedAsset->Hotspot != $row[5] ||
-                $matchedAsset->Completion_Status != $row[21]) {
+                $matchedAsset->completed_status != $row[21]) {
                 return true; 
             }
         }
