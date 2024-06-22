@@ -26,5 +26,6 @@ class DeleteRequestLog extends Model
         'completed_status',
         'reason',
         'User_Name',
+        'Approved',
         ];
 }

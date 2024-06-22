@@ -18,11 +18,10 @@
                             <th>No</th>
                             <th>Date</th>
                             <th>Functional Location</th>
-                            <th>Switchgear Brand</th>
-                            <th>Substation Name</th>
-                            <th>TEV</th>
-                            <th>Hotspot</th>
+                            <th>Target Date</th>
                             <th>Reason</th>
+                            <th>Requested</th>
+                            <th>Approved</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,11 +30,11 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $log->Date }}</td>
                             <td>{{ $log->Functional_Location }}</td>
-                            <td>{{ $log->Switchgear_Brand }}</td>
-                            <td>{{ $log->Substation_Name }}</td>
-                            <td>{{ $log->TEV }}</td>
-                            <td>{{ $log->Hotspot }}</td>
+                            <td>{{ $log->Date }}</td>
                             <td>{{ $log->reason }}</td>
+                            <td>{{ $log->User_Name }}</td>
+                            <td>{{ $log->Approved }}</td>
+
                         </tr>
                         @endforeach
                     </tbody>

@@ -96,6 +96,7 @@ use Carbon\Carbon;
                             <th>Switchgear Brand</th>
                             <th>Substation Name</th>
                             <th class="sortable health-status-header" data-column="health_status" data-order="asc">Criticality</th>
+                            <th>Defect</th>
                             <th>TEV</th>
                             <th>Hotspot</th>
                             <th>Acknowledgment Status</th>
@@ -123,7 +124,6 @@ use Carbon\Carbon;
                                 @php
                                     $Health_Status = 'Unknown';
                             
-                                    // Calculate pending_days if not already done
                                     if (!$asset->completed_status && $asset->Target_Date) {
                                         $targetDate = \Carbon\Carbon::parse($asset->Target_Date);
                                         $pending_days = $targetDate->isPast() ? \Carbon\Carbon::now()->diffInDays($targetDate) : 0;
@@ -131,7 +131,6 @@ use Carbon\Carbon;
                                         $pending_days = 0;
                                     }
                             
-                                    // Determine health status based on the given conditions
                                     if ($asset->completed_status) {
                                         $Health_Status = 'Clear';
                                     } elseif (!$asset->completed_status && $pending_days > 90) {
@@ -156,7 +155,7 @@ use Carbon\Carbon;
                                     <span class="badge badge-danger">Critical</span>
                                 @endif
                             </td>
-                            
+                            <td>{{ $asset->Defect1 }}</td>
                             <td>{{ $asset->TEV }}</td>
                             <td>{{ $asset->Hotspot }}</td>
                             <td>

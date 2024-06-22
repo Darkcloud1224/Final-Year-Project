@@ -28,6 +28,9 @@ class DeleteRequestController extends Controller
             DeleteRequestLog::create([
                 'Functional_Location' => $asset->Functional_Location,
                 'reason' => $deleteRequest->reason,
+                'Date' => $deleteRequest->Date,
+                'User_Name' => $deleteRequest->User_Name, 
+                'Approved' =>  auth()->user()->name,
             ]);
 
             $asset->delete();
