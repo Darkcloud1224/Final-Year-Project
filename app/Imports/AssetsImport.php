@@ -67,6 +67,7 @@ class AssetsImport implements ToCollection
                     $targetDate = $reportDate->addDays($defaultDays)->format('Y-m-d');
                 } else {
                     $targetDate = $this->excelSerialDateToPHPDate($targetDate);
+                    $completionStatus = $this->excelSerialDateToPHPDate($completionStatus);
                 }
 
                 $existingAssetQuery = Assets::where('Functional_Location', $functionalLocation)

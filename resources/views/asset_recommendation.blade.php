@@ -70,6 +70,9 @@ use Carbon\Carbon;
                     </div>
                 </div>
             </form>
+            <small class="form-text text-muted">
+                <a href="{{ asset('template.xlsx') }}" download>Use this template to fill in the switchgear record</a>
+            </small>
 
             <form method="GET" action="{{ route('asset_recommendation') }}">
                 <div class="form-row align-items-center">
@@ -159,7 +162,7 @@ use Carbon\Carbon;
                             <td>{{ $asset->TEV }}</td>
                             <td>{{ $asset->Hotspot }}</td>
                             <td>
-                                @if ($asset->completed_status)
+                                @if ($asset->completed_status&& is_null($asset->acknowledgment_status))
                                     N/A
                                 @elseif ($asset->acknowledgment_status)
                                     {{ \Carbon\Carbon::parse($asset->acknowledgment_status)->format('Y-m-d H:i:s') }}
@@ -171,7 +174,7 @@ use Carbon\Carbon;
                                 @endif
                             </td>
                             <td>
-                                @if ($asset->completed_status)
+                                @if ($asset->completed_status && is_null($asset->ongoing_status))
                                     N/A
                                 @else
                                     {{ $asset->ongoing_status }}

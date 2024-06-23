@@ -2,47 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Assets;
-use App\Models\User;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $goodCount = Assets::where('Health_Status', 'Minor')->count();
-        $moderateCount = Assets::where('Health_Status', 'Major')->count();
-        $criticalCount = Assets::where('Health_Status', 'Critical')->count();
         $assets = Assets::all();
 
-        $healthStatusData = $assets->groupBy('Health_Status')->map(function ($group) {
-            return $group->count();
-        })->toArray();
+        $totalAssets = $assets->count();
+        $rectifiedAssets = $assets->where('completed_status', '!=', null)->count();
+        $notRectifiedAssets = $totalAssets - $rectifiedAssets;
 
-        $tevHotspotData = $assets->map(function ($asset) {
-            return [(float) $asset->TEV, (float) $asset->hotspot];
-        })->toArray();
+        $criticalityData = [
+            'Clear' => $assets->where('Health_Status', 'Clear')->count(),
+            'Minor' => $assets->where('Health_Status', 'Minor')->count(),
+            'Major' => $assets->where('Health_Status', 'Major')->count(),
+            'Critical' => $assets->where('Health_Status', 'Critical')->count()
+        ];
 
-        $rectifyStatusData = $assets->groupBy('Rectify_Status')->map(function ($group) {
-            return $group->count();
-        })->toArray();
+        $defectsData = [
+            'Hotspot' => $assets->where('Defect1', 'HOTSPOT')->count(),
+            'Arching Sound' => $assets->where('Defect1', 'ARCHING SOUND')->count(),
+            'Tracking Sound' => $assets->where('Defect1', 'TRACKING SOUND')->count(),
+            'Ultrasound' => $assets->where('Defect1', 'ULTRASOUND')->count(),
+            'Mechanical Vibration' => $assets->where('Defect1', 'MECHANICAL VIBRATION')->count(),
+            'Corona Discharge' => $assets->where('Defect1', 'CORONA DISCHARGE')->count()
+        ];
 
-        $defectsData = $assets->map(function ($asset) {
-            return [
-                'Defect1' => $asset->Defect1,
-                'Defect2' => $asset->Defect2,
-                'Defect3' => $asset->Defects,
-            ];
-        })->reduce(function ($carry, $item) {
-            foreach ($item as $key => $value) {
-                if (!isset($carry[$key])) {
-                    $carry[$key] = 0;
-                }
-                $carry[$key] += (int) $value; 
+        $defectsByBrand = $assets->groupBy('Switchgear_Brand')->map(function ($group) {
+            return $group->groupBy('Defect1')->map->count();
+        });
+
+        $categories = $defectsByBrand->keys()->toArray();
+        $series = [];
+
+        $defectTypes = ['HOTSPOT', 'ARCHING SOUND', 'TRACKING SOUND', 'ULTRASOUND', 'MECHANICAL VIBRATION', 'CORONA DISCHARGE'];
+
+        foreach ($defectTypes as $defectType) {
+            $data = [];
+            foreach ($categories as $brand) {
+                $data[] = $defectsByBrand[$brand]->get($defectType, 0);
             }
-            return $carry;
-        }, []);
+            $series[] = [
+                'name' => $defectType,
+                'data' => $data
+            ];
+        }
 
-        return view('home', compact('goodCount', 'moderateCount', 'criticalCount', 'assets', 'healthStatusData', 'tevHotspotData', 'rectifyStatusData', 'defectsData'));
+        return view('home', compact('totalAssets', 'rectifiedAssets', 'notRectifiedAssets', 'criticalityData', 'defectsData', 'categories', 'series'));
     }
 }

@@ -88,11 +88,11 @@ class AssetRecommendationController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'file' => 'required|file|mimes:xlsx,xls,csv,txt'
+            'file' => 'required|file|mimes:xlsx'
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator->errors());
+            session()->flash('error', 'Failed to import assets. Please upload a valid .xlsx file');
         }
 
         try {
@@ -109,7 +109,10 @@ class AssetRecommendationController extends Controller
                 ]);
 
         } catch (\Exception $e) {
-            Log::error('Failed to import data. Error: ' . $e->getMessage());
+            Log::error('Failed to import assets: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            session()->flash('error', 'Failed to import assets.');
         }
         return back();
     }
@@ -172,7 +175,8 @@ class AssetRecommendationController extends Controller
                 session()->flash('error', 'Completion date must be after the acknowledgment date');
                 return redirect()->back()->withInput();
             }
-
+            $asset->acknowledgment_status = $asset->acknowledgment_status;
+            $asset->ongoing_status = $asset->ongoing_status;
             $asset->completed_status = $progressDate;
         }
 
