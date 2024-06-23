@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Switchgear Progress Monitoring</h1>
+    <h1 class="mb-4">Switchgear Progress Monitoring</h1>
 
     <div class="row">
         <div class="col-md-4">
@@ -66,6 +66,13 @@
     var pendingCount = {{ $pendingCount }};
     var averageRectificationTimes = @json($averageRectificationTimes);
     var criticalityLevels = @json($criticalityLevels);
+    var colors = {
+    'Clear': 'rgba(75, 192, 192, 0.8)',
+    'Minor': 'rgba(255, 159, 64, 0.8)',
+    'Major': 'rgba(54, 162, 235, 0.8)',
+    'Critical': 'rgba(255, 99, 132, 0.8)'
+    };
+
 
     // Rectified vs Pending Bar Chart
     Highcharts.chart('progressChartContainer', {
@@ -124,23 +131,23 @@
 
     // Criticality of the Assets
     Highcharts.chart('criticalityChartContainer', {
-        chart: {
-            type: 'pie'
-        },
-        title: {
-            text: 'Criticality of the Assets'
-        },
-        series: [{
-            name: 'Criticality',
-            colorByPoint: true,
-            data: Object.keys(criticalityLevels).map(function(key) {
-                return {
-                    name: key,
-                    y: criticalityLevels[key],
-                    color: (key === 'Critical') ? 'rgba(255, 99, 132, 0.8)' : 'rgba(75, 192, 192, 0.8)'
-                };
-            })
-        }]
-    });
+    chart: {
+        type: 'pie'
+    },
+    title: {
+        text: 'Criticality of the Assets'
+    },
+    series: [{
+        name: 'Criticality',
+        colorByPoint: true,
+        data: Object.keys(criticalityLevels).map(function(key) {
+            return {
+                name: key,
+                y: criticalityLevels[key],
+                color: colors[key]
+            };
+        })
+    }]
+});
 </script>
 @endsection

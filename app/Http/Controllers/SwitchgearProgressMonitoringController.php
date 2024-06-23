@@ -15,22 +15,15 @@ class SwitchgearProgressMonitoringController extends Controller
 
         $assets = Assets::all();
 
-        // Calculate the average days to rectify for each defect type
-        $defectTypes = [
-            'CORONA DISCHARGE',
-            'ARCHING SOUND',
-            'TRACKING SOUND',
-            'HOTSPOT',
-            'ULTRASOUND',
-            'MECHANICAL VIBRATION'
+        // Use provided average rectification times
+        $averageRectificationTimes = [
+            'CORONA DISCHARGE' => 70,
+            'ARCHING SOUND' => 25,
+            'TRACKING SOUND' => 47,
+            'HOTSPOT' => 39,
+            'ULTRASOUND' => 52,
+            'MECHANICAL VIBRATION' => 54
         ];
-
-        $averageRectificationTimes = [];
-        foreach ($defectTypes as $defect) {
-            $averageRectificationTimes[$defect] = Assets::where('defect1', $defect)
-                ->whereNotNull('completed_status')
-                ->avg(DB::raw('DATEDIFF(completed_status, Date)'));
-        }
 
         // Calculate the criticality of the assets
         $criticalityLevels = [
