@@ -9,7 +9,11 @@
     <div class="sidebar">
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                @include('layouts.menu')
+                @if(Auth::user()->isAdmin())
+                    @include('layouts.menu')
+                @else
+                    @include('layouts.staff-menu')
+                @endif
             </ul>
         </nav>
     </div>

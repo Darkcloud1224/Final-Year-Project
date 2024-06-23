@@ -36,8 +36,7 @@
         <div class="form-group">
             <label for="role">Role</label>
             <select class="form-control" id="role" name="role" required>
-                <option value="technician" {{ $user->roles == 'technician' ? 'selected' : '' }}>Technician</option>
-                <option value="rectifier" {{ $user->roles == 'rectifier' ? 'selected' : '' }}>Rectifier</option>
+                <option value="staff" {{ $user->roles == 'staff' ? 'selected' : '' }}>Staff</option>
                 <option value="admin" {{ $user->roles == 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
         </div>
