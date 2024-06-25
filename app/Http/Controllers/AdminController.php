@@ -41,7 +41,8 @@ class AdminController extends Controller
         $newUser->name = $request->name;
         $newUser->email = $request->email;
         $newUser->password = Hash::make($request->password); 
-        $newUser->roles = $request->roles;
+        $newUser->roles = $request->role;
+        $newUser->division = $request->division;
         $newUser->save();
 
         return redirect()->route('users.index')->with('success', 'New user has been added successfully');
@@ -73,12 +74,15 @@ class AdminController extends Controller
         'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
         'password' => 'nullable|string|min:8|confirmed',
         'role' => 'required|string',
+        'division' => 'required|string',
+
     ]);
 
     // Update user fields except password
     $user->name = $request->name;
     $user->email = $request->email;
     $user->roles = $request->role;
+    $user->division = $request->division;
 
     // Update password if provided
     if ($request->password) {

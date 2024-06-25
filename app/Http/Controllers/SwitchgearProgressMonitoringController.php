@@ -13,9 +13,12 @@ class SwitchgearProgressMonitoringController extends Controller
         $rectifiedCount = Assets::whereNotNull('completed_status')->count();
         $pendingCount = Assets::whereNull('completed_status')->count();
 
+        $rectifiedAssets = Assets::whereNotNull('completed_status')->get();
+
+        $pendingAssets = Assets::whereNull('completed_status')->get();
+
         $assets = Assets::all();
 
-        // Use provided average rectification times
         $averageRectificationTimes = [
             'CORONA DISCHARGE' => 70,
             'ARCHING SOUND' => 25,
@@ -25,7 +28,6 @@ class SwitchgearProgressMonitoringController extends Controller
             'MECHANICAL VIBRATION' => 54
         ];
 
-        // Calculate the criticality of the assets
         $criticalityLevels = [
             'Clear' => 0,
             'Minor' => 0,
@@ -37,6 +39,6 @@ class SwitchgearProgressMonitoringController extends Controller
             $criticalityLevels[$level] = Assets::where('Health_Status', $level)->count();
         }
 
-        return view('switchgear_progress_monitoring', compact('rectifiedCount', 'pendingCount', 'assets', 'averageRectificationTimes', 'criticalityLevels'));
+        return view('switchgear_progress_monitoring', compact('rectifiedCount', 'pendingCount', 'assets', 'averageRectificationTimes', 'criticalityLevels', 'rectifiedAssets', 'pendingAssets'));
     }
 }

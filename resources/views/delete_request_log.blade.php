@@ -13,6 +13,7 @@
 
             <div class="table-responsive">
                 <table class="table table-bordered mt-3">
+                    <h4>Delete Request Log</h4>
                     <thead class="thead-dark">
                         <tr>
                             <th>No</th>
@@ -22,6 +23,7 @@
                             <th>Reason</th>
                             <th>Requested</th>
                             <th>Approved</th>
+                            <th>Timestamp</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,7 +36,7 @@
                             <td>{{ $log->reason }}</td>
                             <td>{{ $log->User_Name }}</td>
                             <td>{{ $log->Approved }}</td>
-
+                            <td>{{ $log->created_at }}</td>
                         </tr>
                         @endforeach
                     </tbody>

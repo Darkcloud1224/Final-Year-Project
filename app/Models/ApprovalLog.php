@@ -12,7 +12,7 @@ class ApprovalLog extends Model
     protected $table = 'approval_logs'; 
 
     protected $fillable = [
-        'User_Name', 'Asset_Name', 'Recitified_Action', 'reasons'
+        'User_Name', 'Asset_Name', 'Recitified_Action', 'reasons', 'created_at', 'updated_at',
     ];
 }
 

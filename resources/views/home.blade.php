@@ -2,14 +2,12 @@
 
 @section('content')
 <div class="container">
-    <!-- Total Assets -->
     <div class="row mb-4">
         <div class="col-md-12 text-center">
-            <h3 class="display-4">Total Assets: {{ $totalAssets }}</h3>
+            <h3 class="display-4">Total Reported Assets: {{ $totalAssets }}</h3>
         </div>
     </div>
 
-    <!-- Rectified and Not Rectified Assets -->
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card text-white bg-success mb-3">
@@ -22,7 +20,7 @@
         <div class="col-md-6">
             <div class="card text-white bg-danger mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Assets Not Rectified</h5>
+                    <h5 class="card-title">Pending Rectification Assets</h5>
                     <p class="card-text display-4">{{ $notRectifiedAssets }}</p>
                 </div>
             </div>
@@ -53,7 +51,7 @@
             type: 'pie'
         },
         title: {
-            text: 'Health Status Distribution'
+            text: 'Criticality Distribution'
         },
         series: [{
             name: 'Health Status',

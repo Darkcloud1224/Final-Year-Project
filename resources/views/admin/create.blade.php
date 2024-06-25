@@ -39,6 +39,13 @@
                 <option value="admin">Admin</option>
             </select>
         </div>
+        <div class="form-group">
+            <label for="division">Division</label>
+            <select class="form-control" id="division" name="division" required>
+                <option value="planning">Planning</option>
+                <option value="repairing">Repairing</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Add User</button>
     </form>
 </div>

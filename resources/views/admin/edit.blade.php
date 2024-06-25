@@ -40,6 +40,13 @@
                 <option value="admin" {{ $user->roles == 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
         </div>
+        <div class="form-group">
+            <label for="division">Division</label>
+            <select class="form-control" id="division" name="division" required>
+                <option value="planning" {{ $user->division == 'planning' ? 'selected' : '' }}>Planning</option>
+                <option value="repairing" {{ $user->division == 'repairing' ? 'selected' : '' }}>Repairing</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Update User</button>
     </form>
 </div>

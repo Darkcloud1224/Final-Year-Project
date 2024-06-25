@@ -38,19 +38,24 @@
                     <h4>Approval Log</h4>
                     <thead class="thead-dark">
                         <tr>
+                            <th>No</th>
                             <th>Approved By</th>
                             <th>Functional Location</th>
                             <th>Action</th>
                             <th>Reasons</th>
+                            <th>Timestamp</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($approvalLogs as $approvalLog)
                             <tr>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $approvalLog->User_Name }}</td>
                                 <td>{{ $approvalLog->Asset_Name }}</td>
                                 <td>{{ $approvalLog->Recitified_Action }}</td>
                                 <td>{{ $approvalLog->reasons }}</td>
+                                <td>{{ $approvalLog->created_at }}</td>
+
                             </tr>
                         @endforeach
                     </tbody>

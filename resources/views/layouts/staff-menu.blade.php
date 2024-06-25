@@ -7,10 +7,12 @@
         <i class="nav-icon fa fa-lightbulb"></i>
         <p>Switchgear List</p>
     </a>
+    <!--
     <a href="{{ route('report_generation.index') }}" class="nav-link {{ Request::is('report_generation*') ? 'active' : '' }}">
         <i class="nav-icon fas fa-cloud-download-alt"></i>
         <p>Report Generation</p>
     </a>
+    //-->
     <a href="{{ route('report_log.index') }}" class="nav-link {{ Request::is('report_log*') ? 'active' : '' }}">
         <i class="nav-icon far fa-bookmark"></i>
         <p>Report Log</p>

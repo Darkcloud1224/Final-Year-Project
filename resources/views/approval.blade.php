@@ -25,11 +25,15 @@
     .actions-column {
         width: 180px; 
     }
+
+    .no-wrap {
+        white-space: nowrap;
+    }
 </style>
 
 <div class="container">
     <div class="row justify-content-center mt-3 mb-5">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
                     @if (session('success'))
@@ -42,17 +46,17 @@
                     @if ($pendingApprovals->isEmpty())
                         <p>No pending approvals.</p>
                     @else
-                        <table class="table table-bordered">
-                            <thead class="thead-dark">
+                    <table class="table table-bordered w-100">
+                        <thead class="thead-dark">
                                 <tr>
-                                    <th>Reported Date</th>
+                                    <th class="no-wrap">Reported Date</th>
                                     <th>Functional Location</th>
                                     <th>Switchgear Brand</th>
                                     <th>Substation Name</th>
                                     <th>TEV</th>
                                     <th>Hotspot</th>
-                                    <th>Target Date</th>
-                                    <th>Completed Status / Date</th>
+                                    <th class="no-wrap">Target Date</th>
+                                    <th>Completed Date</th>
                                     <th class="actions-column">Actions</th> 
                                 </tr>
                             </thead>
@@ -82,7 +86,6 @@
     </div>
 </div>
 
-<!-- Rejection Reason Modal -->
 <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -109,7 +112,6 @@
     </div>
 </div>
 
-<!-- Approval Reason Modal -->
 <div class="modal fade" id="approveModal" tabindex="-1" role="dialog" aria-labelledby="approveModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -191,6 +193,25 @@
             }).appendTo(form);
             form.off('submit').submit();
         });
+
+        function showDateErrorMessage(messages) {
+        var errorMessageContainer = document.getElementById('dateErrorMessageContainer');
+        var errorMessagesList = document.getElementById('dateErrorMessagesList');
+
+        errorMessagesList.innerHTML = '';
+
+        messages.forEach(function(message) {
+            var listItem = document.createElement('li');
+            listItem.innerText = message;
+            errorMessagesList.appendChild(listItem);
+        });
+
+        errorMessageContainer.style.display = 'block';
+
+        setTimeout(function() {
+            errorMessageContainer.style.display = 'none';
+        }, 5000);
+    }
     });
 </script>
 

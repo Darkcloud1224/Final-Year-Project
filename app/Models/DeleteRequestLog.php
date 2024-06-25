@@ -27,5 +27,6 @@ class DeleteRequestLog extends Model
         'reason',
         'User_Name',
         'Approved',
+        'created_at',
         ];
 }

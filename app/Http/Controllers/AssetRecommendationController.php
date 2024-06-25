@@ -41,6 +41,15 @@ class AssetRecommendationController extends Controller
             $query->where('Switchgear_Brand', 'like', '%' . $request->input('brand') . '%');
         }
 
+        if ($request->has('filter')) {
+            $filter = $request->get('filter');
+            if ($filter == 'rectified') {
+                $query->whereNotNull('completed_status');
+            } elseif ($filter == 'not_rectified') {
+                $query->whereNull('completed_status');
+            }
+        }
+
         $query->orderBy('id', 'desc');
 
         $assets = $query->paginate(10); 

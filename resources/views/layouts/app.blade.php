@@ -41,7 +41,7 @@
                 <div class="float-right d-none d-sm-block">
                     <b>Version</b> 1.0.0
                 </div>
-                <strong>Copyright Tenaga Nasional Berhad &copy; 2014-2023 <a href="https://www.tnb.com.my">TNB</a></strong> All rights
+                <strong>Copyright Tenaga Nasional Berhad &copy; 2021 <a href="https://www.tnb.com.my">TNB</a></strong> All rights
                 reserved.
             </footer>
         </div>

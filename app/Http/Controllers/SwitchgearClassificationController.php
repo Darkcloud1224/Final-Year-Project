@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Assets;
-use Illuminate\Support\Facades\DB;
 
 class SwitchgearClassificationController extends Controller
 {
@@ -12,10 +11,10 @@ class SwitchgearClassificationController extends Controller
     {
         $rectifiedCount = Assets::whereNotNull('completed_status')->count();
         $notRectifiedCount = Assets::whereNull('completed_status')->count();
-
         $notRectifiedAssets = Assets::whereNull('completed_status')->get();
+        $rectifiedAssets = Assets::whereNotNull('completed_status')->get();
+        $allAssets = Assets::all();
 
-        // Define the list of defects
         $defectList = [
             'CORONA DISCHARGE',
             'ARCHING SOUND',
@@ -25,12 +24,14 @@ class SwitchgearClassificationController extends Controller
             'MECHANICAL VIBRATION'
         ];
 
-        // Calculate the count of each defect type
         $defectTypes = [];
         foreach ($defectList as $defect) {
-            $defectTypes[$defect] = Assets::where('completed_status', null)->where('defect1', $defect)->count();
+            $defectTypes[$defect] = Assets::where(function ($query) use ($defect) {
+                    $query->where('defect1', $defect);
+                })
+                ->count();
         }
 
-        return view('switchgear_classification', compact('rectifiedCount', 'notRectifiedCount', 'notRectifiedAssets', 'defectTypes'));
+        return view('switchgear_classification', compact('rectifiedCount', 'notRectifiedCount', 'notRectifiedAssets', 'defectTypes', 'rectifiedAssets', 'allAssets'));
     }
 }
