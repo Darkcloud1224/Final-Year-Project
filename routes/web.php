@@ -13,9 +13,7 @@ use App\Http\Controllers\DeleteRequestLogController;
 use App\Http\Controllers\SwitchgearClassificationController;
 use App\Http\Controllers\SwitchgearProgressMonitoringController;
 
-if (App::environment('production')) {  
-    URL::forceScheme('https');  
-}  
+URL::forceScheme('https');
 Route::get('/', function () {
     return redirect('/login');
 });
