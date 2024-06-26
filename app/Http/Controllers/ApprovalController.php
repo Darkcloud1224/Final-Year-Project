@@ -7,6 +7,7 @@ use App\Models\Approval;
 use App\Models\Assets;
 use App\Models\ApprovalLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class ApprovalController extends Controller
 {
@@ -20,6 +21,23 @@ class ApprovalController extends Controller
     public function approve(Request $request, $id)
     {
         $approval = Approval::findOrFail($id);
+
+        $duplicate = Assets::where('Functional_Location', $approval->Functional_Location)
+            ->where('Switchgear_Brand', $approval->Switchgear_Brand)
+            ->where('Substation_Name', $approval->Substation_Name)
+            ->where('TEV', $approval->TEV)
+            ->where('Hotspot', $approval->Hotspot)
+            ->where('Date', $approval->Date)
+            ->where('Defect', $approval->Defect)
+            ->where('Defect1', $approval->Defect1)
+            ->where('Defect2', $approval->Defect2)
+            ->where('Target_Date', $approval->Target_Date)
+            ->exists();
+
+        if ($duplicate) {
+            return redirect()->route('approval.index')->with('error', 'Duplicate asset found. Approval not processed.');
+        }
+
         Assets::create([
             'Functional_Location' => $approval->Functional_Location,
             'Switchgear_Brand' => $approval->Switchgear_Brand,
@@ -30,10 +48,11 @@ class ApprovalController extends Controller
             'Defect' => $approval->Defect,
             'Defect1' => $approval->Defect1,
             'Defect2' => $approval->Defect2,
-            'Target_Date' =>$approval->Target_Date,
-            'completed_status'=>$approval->completed_status,
+            'Target_Date' => $approval->Target_Date,
+            'completed_status' => $approval->completed_status,
         ]);
 
+        // Log the approval action
         ApprovalLog::create([
             'Recitified_Action' => 'Approved', 
             'User_Name' => auth()->user()->name,
@@ -41,11 +60,11 @@ class ApprovalController extends Controller
             'reasons' => $request->input('reason'),
         ]);
 
+        // Delete the approval request
         $approval->delete();
 
         return redirect()->route('approval.index')->with('success', 'Asset approved successfully.');
     }
-
 
     public function reject(Request $request, $id)
     {
@@ -62,9 +81,4 @@ class ApprovalController extends Controller
 
         return redirect()->route('approval.index')->with('success', 'Asset rejected successfully.');
     }
-
-    }
-
-
-
-
+}

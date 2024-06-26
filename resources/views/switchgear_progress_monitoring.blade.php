@@ -61,6 +61,7 @@
                     <table class="table table-bordered mt-3">
                         <thead class="thead-dark">
                             <tr>
+                                <th>No</th>
                                 <th>Functional Location</th>
                                 <th>Reported Date</th>
                                 <th>Target Date</th>
@@ -72,6 +73,7 @@
                         <tbody>
                             @foreach ($pendingAssets as $asset)
                             <tr>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $asset->Functional_Location }}</td>
                                 <td>{{ $asset->Date }}</td>
                                 <td>{{ $asset->Target_Date }}</td>

@@ -9,10 +9,10 @@
 </style>
 
 <div class="container">
-    <br></br>
     <button class="btn btn-primary print-button" onclick="printPage()">Print</button>
     <br></br>
     <h1>Switchgear Classification</h1>
+    <br></br>
     <div class="row">
         <div class="col-md-6">
             <div id="rectifiedChartContainer"></div>

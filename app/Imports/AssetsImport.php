@@ -126,7 +126,7 @@ class AssetsImport implements ToCollection
                     $defectsMatch = $defectsMatchQuery->exists();
 
                     if ($defectsMatch) {
-                        $columnsNotMatch = $this->compareNonDefectColumns($functionalLocation, $row);
+                        $columnsNotMatch = $this->compareNonDefectColumns($functionalLocation, $tev, $hotspot ,$switchgearBrand, $substationName, $defect,  $defect1, $defect2, $date, $targetDate,$completionStatus,$row);
 
                         if ($columnsNotMatch) {
                             $approvalEntry = new Approval([
@@ -180,10 +180,20 @@ class AssetsImport implements ToCollection
      * @param array $row
      * @return bool
      */
-    private function compareNonDefectColumns($functionalLocation, $row)
+    private function compareNonDefectColumns($functionalLocation, $tev, $hotspot ,$switchgearBrand, $substationName, $defect,  $defect1, $defect2, $date, $targetDate,$completionStatus, $row)
     {
         $matchedAsset = Assets::where('Functional_Location', $functionalLocation)
-            ->first();
+        ->where('Switchgear_Brand', $switchgearBrand)
+        ->where('Substation_Name', $substationName)
+        ->where('Defect', $defect)
+        ->where('Defect1', $defect1)
+        ->where('Defect2', $defect2)
+        ->where('Date', $date)
+        ->where('Target_Date', $targetDate)
+        ->where('completed_status', $completionStatus)
+        ->where('TEV', $tev)
+        ->where('Hotspot', $hotspot)
+        ->first();
 
         if ($matchedAsset) {
             if ($matchedAsset->Switchgear_Brand != $row[8] ||
@@ -194,7 +204,6 @@ class AssetsImport implements ToCollection
                 return true; 
             }
         }
-
         return false; 
     }
 }
