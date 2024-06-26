@@ -21,7 +21,6 @@ class ApprovalController extends Controller
     public function approve(Request $request, $id)
     {
         $approval = Approval::findOrFail($id);
-
         $duplicate = Assets::where('Functional_Location', $approval->Functional_Location)
             ->where('Switchgear_Brand', $approval->Switchgear_Brand)
             ->where('Substation_Name', $approval->Substation_Name)
@@ -33,9 +32,9 @@ class ApprovalController extends Controller
             ->where('Defect2', $approval->Defect2)
             ->where('Target_Date', $approval->Target_Date)
             ->exists();
-
         if ($duplicate) {
-            return redirect()->route('approval.index')->with('error', 'Duplicate asset found. Approval not processed.');
+            Session::flash('error', 'Duplication found');
+            return redirect()->route('approval.index');
         }
 
         Assets::create([
@@ -52,7 +51,6 @@ class ApprovalController extends Controller
             'completed_status' => $approval->completed_status,
         ]);
 
-        // Log the approval action
         ApprovalLog::create([
             'Recitified_Action' => 'Approved', 
             'User_Name' => auth()->user()->name,
@@ -60,7 +58,6 @@ class ApprovalController extends Controller
             'reasons' => $request->input('reason'),
         ]);
 
-        // Delete the approval request
         $approval->delete();
 
         return redirect()->route('approval.index')->with('success', 'Asset approved successfully.');

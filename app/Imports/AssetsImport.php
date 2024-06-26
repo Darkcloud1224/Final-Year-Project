@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+
 
 class AssetsImport implements ToCollection
 {
@@ -128,7 +130,23 @@ class AssetsImport implements ToCollection
                     if ($defectsMatch) {
                         $columnsNotMatch = $this->compareNonDefectColumns($functionalLocation, $tev, $hotspot ,$switchgearBrand, $substationName, $defect,  $defect1, $defect2, $date, $targetDate,$completionStatus,$row);
 
-                        if ($columnsNotMatch) {
+                        if (!$columnsNotMatch) {
+                            $duplicate = Assets::where('Functional_Location', $functionalLocation)
+                            ->where('Switchgear_Brand', $switchgearBrand)
+                            ->where('Substation_Name', $substationName)
+                            ->where('TEV', $tev)
+                            ->where('Hotspot', $hotspot)
+                            ->where('Date', $date)
+                            ->where('Defect', $defect)
+                            ->where('Defect1', $defect1)
+                            ->where('Defect2', $defect2)
+                            ->where('Target_Date', $targetDate)
+                            ->exists();
+
+                            if ($duplicate) {
+                                Session::flash('error', 'Duplication found');
+                            }
+
                             $approvalEntry = new Approval([
                                 'Functional_Location' => $functionalLocation,
                                 'Switchgear_Brand' => $switchgearBrand,
@@ -180,20 +198,21 @@ class AssetsImport implements ToCollection
      * @param array $row
      * @return bool
      */
-    private function compareNonDefectColumns($functionalLocation, $tev, $hotspot ,$switchgearBrand, $substationName, $defect,  $defect1, $defect2, $date, $targetDate,$completionStatus, $row)
-    {
+    private function compareNonDefectColumns($functionalLocation, $tev, $hotspot, $switchgearBrand, $substationName, $defect, $defect1, $defect2, $date, $targetDate, $completionStatus, $row)
+{
+    try {
         $matchedAsset = Assets::where('Functional_Location', $functionalLocation)
-        ->where('Switchgear_Brand', $switchgearBrand)
-        ->where('Substation_Name', $substationName)
-        ->where('Defect', $defect)
-        ->where('Defect1', $defect1)
-        ->where('Defect2', $defect2)
-        ->where('Date', $date)
-        ->where('Target_Date', $targetDate)
-        ->where('completed_status', $completionStatus)
-        ->where('TEV', $tev)
-        ->where('Hotspot', $hotspot)
-        ->first();
+            ->where('Switchgear_Brand', $switchgearBrand)
+            ->where('Substation_Name', $substationName)
+            ->where('Defect', $defect)
+            ->where('Defect1', $defect1)
+            ->where('Defect2', $defect2)
+            ->where('Date', $date)
+            ->where('Target_Date', $targetDate)
+            ->where('completed_status', $completionStatus)
+            ->where('TEV', $tev)
+            ->where('Hotspot', $hotspot)
+            ->first();
 
         if ($matchedAsset) {
             if ($matchedAsset->Switchgear_Brand != $row[8] ||
@@ -201,9 +220,14 @@ class AssetsImport implements ToCollection
                 $matchedAsset->TEV != $row[4] ||
                 $matchedAsset->Hotspot != $row[5] ||
                 $matchedAsset->completed_status != $row[21]) {
-                return true; 
+                return true;
             }
         }
-        return false; 
+        return false;
+    } catch (\Exception $e) {
+        Log::error('Error comparing non-defect columns: ' . $e->getMessage());
+        throw $e;
     }
+}
+
 }
