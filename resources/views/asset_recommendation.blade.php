@@ -426,7 +426,7 @@
                         assetId),
                     type: 'POST',
                     data: {
-                        _token: '{{ csrf_token() }}',
+                        _token: $('meta[name="csrf-token"]').attr('content'), // Include CSRF token here
                         reason: reason
                     },
                     success: function(response) {
