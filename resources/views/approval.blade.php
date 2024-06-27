@@ -196,6 +196,15 @@
             form.off('submit').submit();
         });
 
+        function addCsrfToken(form) {
+            var token = $('meta[name="csrf-token"]').attr('content');
+            $('<input>').attr({
+                type: 'hidden',
+                name: '_token',
+                value: token
+            }).appendTo(form);
+        }
+
         function showDateErrorMessage(messages) {
         var errorMessageContainer = document.getElementById('dateErrorMessageContainer');
         var errorMessagesList = document.getElementById('dateErrorMessagesList');
