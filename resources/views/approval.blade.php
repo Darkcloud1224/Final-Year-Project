@@ -142,11 +142,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        var rejectFormAction;
-        var approveFormAction;
 
-        function addCsrfToken(form) {
+    function addCsrfToken(form) {
             var token = $('meta[name="csrf-token"]').attr('content');
             $('<input>').attr({
                 type: 'hidden',
@@ -154,6 +151,10 @@
                 value: token
             }).appendTo(form);
         }
+    
+    $(document).ready(function() {
+        var rejectFormAction;
+        var approveFormAction;
 
         $('.btn-reject').on('click', function(event) {
             event.preventDefault();
