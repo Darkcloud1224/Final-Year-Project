@@ -1,5 +1,10 @@
 <x-laravel-ui-adminlte::adminlte-layout>
 
+    <head>
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+    </head>
+
     <body class="hold-transition sidebar-mini layout-fixed">
         <div class="wrapper">
             <nav class="main-header navbar navbar-expand navbar-white navbar-light fixed">
