@@ -174,6 +174,7 @@
                 name: 'reason',
                 value: reason
             }).appendTo(form);
+            addCsrfToken(form); // Add CSRF token
             form.off('submit').submit();
         });
 
@@ -191,6 +192,7 @@
                 name: 'reason',
                 value: reason
             }).appendTo(form);
+            addCsrfToken(form); // Add CSRF token
             form.off('submit').submit();
         });
 
