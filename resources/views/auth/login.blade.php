@@ -88,5 +88,8 @@
                 </div>
             </div>
         </div>
+        <div class="footer">
+            &copy; 2024 SWAM-TNB. All rights reserved.
+        </div>
     </body>
 </x-laravel-ui-adminlte::adminlte-layout>
