@@ -30,6 +30,13 @@
             background-color: #0056b3;
             border-color: #004085;
         }
+
+        .footer {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
     </style>
 
     <body class="hold-transition login-page">
