@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="{{ route('home') }}" class="brand-link">
-        <img src="{{ asset('logo.png') }"
+        <img src="{{ asset('logo.png') }}"
              alt="AdminLTE Logo"
              class="brand-image img-circle elevation-3">
         <span class="brand-text font-weight-light">SWAM-TNB</span>
