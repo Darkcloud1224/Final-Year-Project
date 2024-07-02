@@ -1,5 +1,41 @@
 <x-laravel-ui-adminlte::adminlte-layout>
 
+    <style>
+        .dropdown-menu-lg {
+        width: 300px;
+        padding: 10px;
+        }
+
+        .user-header {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .user-header p {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .user-header small {
+            display: block;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            color: #f8f9fa;
+        }
+
+        .user-footer {
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-flat {
+            border-radius: 0;
+        }
+    </style>
+
     <head>
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -15,16 +51,15 @@
                             <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                            <li class="user-header bg-primary">
-                                <img src="https://assets.infyom.com/logo/blue_logo_150x150.png" class="img-circle elevation-2" alt="User Image">
-                                <p>
+                            <li class="user-header bg-primary text-center">
+                                <img src="{{ asset('logo.png') }}" class="img-circle elevation-2 mb-3" alt="User Image" style="max-width: 100px;">
+                                <p class="mb-0">
                                     {{ Auth::user()->name }}
-                                    <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
                                 </p>
+                                <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
                             </li>
                             <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                <a href="#" class="btn btn-default btn-flat float-right" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <a href="#" class="btn btn-danger btn-flat float-right" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     Sign out
                                 </a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
