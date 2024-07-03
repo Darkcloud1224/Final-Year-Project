@@ -196,7 +196,7 @@
                                         @if ($asset->completed_status && is_null($asset->acknowledgment_status))
                                             N/A
                                         @elseif ($asset->acknowledgment_status)
-                                            {{ \Carbon\Carbon::parse($asset->acknowledgment_status)->format('Y-m-d H:i:s') }}
+                                            {{ \Carbon\Carbon::parse($asset->acknowledgment_status)->format('d-m-Y H:i:s') }}
                                         @else
                                             <form action="{{ route('assets.acknowledge', $asset->id) }}" method="POST">
                                                 @csrf
@@ -208,11 +208,19 @@
                                     <td>
                                         @if ($asset->completed_status && is_null($asset->ongoing_status))
                                             N/A
-                                        @else
-                                            {{ $asset->ongoing_status }}
+                                        @elseif ($asset->ongoing_status)
+                                            {{ Carbon::parse($asset->ongoing_status)->format('d-m-Y') }}
+                                        @else   
+                                            N/A
                                         @endif
                                     </td>
-                                    <td>{{ $asset->completed_status }}</td>
+                                    <td>
+                                        @if ($asset->completed_status)
+                                        {{ Carbon::parse($asset->completed_status)->format('d-m-Y') }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($asset->completed_status)
                                             Completed
