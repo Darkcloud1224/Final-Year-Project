@@ -141,7 +141,7 @@
                                         {{ $asset->Functional_Location }}</a>
                                     </td>
                                     <td>{{ Carbon::parse($asset->Date)->format('d-m-Y') }}</td>
-                                    <td>{{ $asset->Target_Date }}</td>
+                                    <td>{{ Carbon::parse($asset->Target_Date)->format('d-m-Y') }}</td>
                                     <td>{{ $asset->Switchgear_Brand }}</td>
                                     <td>{{ $asset->Substation_Name }}</td>
                                     <td>
